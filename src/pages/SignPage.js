@@ -28,7 +28,7 @@ const SignBlock = styled.div`
     margin: 0 auto; /* 페이지 중앙에 나타나도록 설정 */
 `;
 
-const SignPage = ({ children }) => {
+const SignPage = () => {
     const [inputs, setInputs] = useState({
         email: '',
         password: '',
@@ -59,29 +59,33 @@ const SignPage = ({ children }) => {
     //책 등록 실행 함수
     const doLogin = (e) => {
         e.preventDefault(); // submit이 action을 안타고 자기 할일을 그만함.
+        
+        let param = {
+            username: email,
+            password: password,
+        }
 
-        fetch('http://localhost:8070/login/', {
+        fetch('/login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json; charset=utf-8',
             },
-            body: JSON.stringify(inputs),
+            body: JSON.stringify(param),
         })
-            .then((res) => {
-                if (res.status === 201) {
-                    return res.json();
-                } else {
-                    return null;
-                }
-            })
-            .then((res) => {
-                // Catch는 여기서 오류가 나야 실행됨.
-                if (res !== null) {
-                    children.history.push('/');
-                } else {
-                    alert('책 등록에 실패하였습니다.');
-                }
-            });
+        .then((res) => {
+            if (res.status === 200) {
+                console.log(res.headers.authorization);
+                window.sessionStorage.setItem(
+                    'Authorization',
+                    res.headers.authorization,
+                );
+                // document.location.href = "/main"
+            } else if(res.status === 401){
+                window.alert('비밀번호가 일치하지 않습니다.');
+            } else{
+                window.alert('아이디 혹은 비밀번호가 일치하지 않습니다.');
+            }
+        })
     };
 
     return (

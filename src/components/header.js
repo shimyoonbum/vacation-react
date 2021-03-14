@@ -1,13 +1,9 @@
 import React from 'react';
 import {
-    Button,
-    Form,
-    FormControl,
     Nav,
     Navbar,
     NavDropdown,
 } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
 import imgfile from '../resources/img/metanet.png';
 
 function Header() {
