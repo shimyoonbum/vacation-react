@@ -50,42 +50,42 @@ const SignPage = () => {
         nameInput.current.focus(); //객체 활용해 커서 초기화
     };
 
-    const onClick = (e) => {
-        console.log(email);
-        console.log(password);
-        onReset();
-    };
-
     //책 등록 실행 함수
     const doLogin = (e) => {
         e.preventDefault(); // submit이 action을 안타고 자기 할일을 그만함.
-        
+
         let param = {
             username: email,
             password: password,
-        }
+        };
 
-        fetch('/login', {
+        fetch('/api/authenticate', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json; charset=utf-8',
             },
             body: JSON.stringify(param),
         })
-        .then((res) => {
-            if (res.status === 200) {
-                console.log(res.headers.authorization);
-                window.sessionStorage.setItem(
-                    'Authorization',
-                    res.headers.authorization,
-                );
-                // document.location.href = "/main"
-            } else if(res.status === 401){
-                window.alert('비밀번호가 일치하지 않습니다.');
-            } else{
-                window.alert('아이디 혹은 비밀번호가 일치하지 않습니다.');
-            }
-        })
+            .then((res) => {
+                if (res.status === 200) {
+                    return res.json();
+                } else if (res.status === 401) {
+                    window.alert('아이디 혹은 비밀번호가 일치하지 않습니다.');
+                    onReset();
+                } else {
+                    window.alert('3자리 이상의 비밀번호를 입력해주세요.');
+                }
+            })
+            .then((res) => {
+                if (res != null) {
+                    window.sessionStorage.setItem('Authorization', res.token);
+
+                    document.location.href = '/main';
+                }
+            })
+            .catch((error) => {
+                console.error(error);
+            });
     };
 
     return (

@@ -1,14 +1,11 @@
 import React from 'react';
-import {
-    Nav,
-    Navbar,
-    NavDropdown,
-} from 'react-bootstrap';
+import { Nav, Navbar, NavDropdown } from 'react-bootstrap';
 import imgfile from '../resources/img/metanet.png';
 
 function Header() {
     const handleLogout = () => {
         window.alert('로그아웃 되었습니다.');
+        window.sessionStorage.setItem('Authorization', '');
     };
     return (
         <>
