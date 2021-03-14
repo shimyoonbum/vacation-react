@@ -1,26 +1,20 @@
-import './App.css';
-import { createGlobalStyle } from 'styled-components';
-import LoginTemplete from './components/LoginTemplete';
-import { Container } from 'react-bootstrap';
-import { Route } from 'react-router-dom';
-import Main from './pages/Main';
-
-const GlobalStyle = createGlobalStyle`
-  body {
-    background: #e9ecef;
-  }
-`;
+import React from 'react';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import SignPage from './pages/SignPage';
+import MainPage from './pages/MainPage';
+import ProfilePage from './pages/ProfilePage';
+import ErrorPage from './pages/ErrorPage';
 
 function App() {
     return (
-        <>
-            <GlobalStyle />
-            <Container>
-                <Route path="/" exact={true} component={LoginTemplete} />
-                <Route path="/home" exact={true} component={Main} />
-            </Container>
-            <LoginTemplete />
-        </>
+        <Router>
+            <Switch>
+                <Route path="/main" component={MainPage} />
+                <Route path="/profile" component={ProfilePage} />
+                <Route path="/" exact component={SignPage} />
+                <Route render={ErrorPage} />
+            </Switch>
+        </Router>
     );
 }
 
