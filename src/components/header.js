@@ -9,7 +9,7 @@ function Header() {
     };
     return (
         <>
-            <Navbar bg="light" expand="lg">
+            <Navbar bg="light" expand="lg" style={{zIndex : '99', boxShadow: '0 1px 10px rgba(0, 0, 0, 0.3)'}}>
                 <Navbar.Brand href="/main">
                     <img src={imgfile} alt="Metanet"></img>
                 </Navbar.Brand>
