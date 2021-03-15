@@ -1,116 +1,132 @@
 import React from 'react';
+import styled from 'styled-components';
 import Header from '../components/Header';
-import '../resources/css/userinfo.css';
+import { BiUser, BiPhoneCall, BiSitemap, BiBuilding } from 'react-icons/bi';
+import { BsBuilding, BsCalendar, BsEnvelope } from 'react-icons/bs';
+import { FaUmbrellaBeach, FaPlane, FaRegCalendarCheck } from 'react-icons/fa';
+import { Accordion, Card, OverlayTrigger, Tooltip } from 'react-bootstrap';
 
-function MainPage({ children }) {
-    console.log(children);
+const Notice = styled.div`
+    padding: 10px;
+    background-color: #fafafa;
+    border-left: 6px solid #7f7f84;
+    box-shadow: 0 5px 8px -6px rgba(0, 0, 0, 0.2);
+`;
+
+const NoticeBlock = styled.div`
+    padding: 5px;
+`;
+
+const CountText = styled.p`
+    font-size: 13px;
+    font-weight: normal;
+    margin-top: 10px;
+    margin-bottom: 0;
+    text-align: center;
+`;
+
+const Counter = styled.div`
+    background-color: #faebeb;
+    padding: 20px;
+    border-radius: 5px;
+`;
+
+const MainPage = () => {
     return (
         <>
-            <Header /> 
-            <div class="container" style={{marginTop: '30px'}}>
-                <div class="card">
-                    <div class="section-container">
-                        <section class="about-area" id="about">
-                            <h1 class="entry-title">
-                                <span>USERINFO</span>
-                            </h1>
-                            <div class="picture">						
-                                <div class="name"><p>님
-                                        환영합니다.</p>
-                                </div>
-                                <div class="description">사원코드 : </div>
-                            </div>
-                            <div class="text">
-                                <div class="notice notice-info">
-                                    <ul>
-                                        <li>
-                                            <div class="info">
-                                                <i class="far fa-building"></i> 직위 : 
-                                                
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <div class="info">
-                                                <i class="fas fa-sitemap"></i> 조직 이름 : 
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <div class="info">
-                                                <i class="fas fa-sitemap"></i> 조직 구분 : 
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <div class="info">
-                                                <i class="fas fa-sitemap"></i>
-                                            </div>
-                                        </li>
-                                    </ul>
-                                </div>
-                                <div class="notice notice-info">
-                                    <ul>
-                                        <li>
-                                            <div class="info">
-                                                <i class="far fa-calendar-alt"></i> 입사일 : 
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <div class="info">
-                                                <i class="fas fa-phone"></i> 
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <div class="info">
-                                                <i class="fas fa-envelope"></i> 
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <div class="info">
-                                                <i class="fas fa-home"></i> 102, Bongeunsa-ro, Gangnam-gu,
-                                                Seoul, Republic of Korea
-                                            </div>
-                                        </li>
-                                    </ul>
-                                </div>
+            <Header />
+            <div className="container">
+                <h2 style={{ marginTop: '30px' }}>USERINFO</h2>
+                <br />
+                <div>
+                    <p>심윤범 님 환영합니다.</p>
+                </div>
+                <div></div>
+                <Accordion>
+                    <Card>
+                        <OverlayTrigger
+                            overlay={
+                                <Tooltip>클릭하여 프로필 정보 확인!</Tooltip>
+                            }
+                        >
+                            <Accordion.Toggle
+                                as={Card.Header}
+                                variant="link"
+                                eventKey="0"
+                            >
+                                사원코드 : E00001
+                            </Accordion.Toggle>
+                        </OverlayTrigger>
 
-                            </div>
+                        <Accordion.Collapse eventKey="0">
+                            <Card.Body>
+                                <Notice>
+                                    <NoticeBlock>
+                                        <BiBuilding />
+                                        &nbsp;직위 :
+                                    </NoticeBlock>
+                                    <NoticeBlock>
+                                        <BiSitemap />
+                                        &nbsp;조직 이름 :
+                                    </NoticeBlock>
+                                    <NoticeBlock>
+                                        <BiUser />
+                                        &nbsp;조직 구분 :
+                                    </NoticeBlock>
+                                    <NoticeBlock>
+                                        <BsBuilding />
+                                        &nbsp;상위 조직 :
+                                    </NoticeBlock>
+                                    <NoticeBlock>
+                                        <BsCalendar />
+                                        &nbsp;입사일 :
+                                    </NoticeBlock>
+                                    <NoticeBlock>
+                                        <BiPhoneCall />
+                                        &nbsp;Phone :
+                                    </NoticeBlock>
+                                    <NoticeBlock>
+                                        <BsEnvelope />
+                                        &nbsp;Email :
+                                    </NoticeBlock>
+                                </Notice>
+                            </Card.Body>
+                        </Accordion.Collapse>
+                    </Card>
+                </Accordion>
 
-                        </section>
-                        <div >
-                            <div class="row">
-                                <br />
-                                <div class="col text-center">
-                                    <h2>개인 휴가 정보</h2>
-                                    <p>발생일 수, 사용일 수, 잔여일 수 표시</p>
-                                </div>
-                            </div>
-                            <div class="row text-center">
-                                <div class="col">
-                                    <div class="counter">
-                                        <i class="fas fa-umbrella-beach fa-2x"></i>
-                                        <h2></h2>
-                                        <p class="count-text ">휴가 발생일 수</p>
-                                    </div>
-                                </div>
-                                <div class="col">
-                                    <div class="counter">
-                                        <i class="fas fa-plane fa-2x"></i>
-                                        <h2></h2>
-                                        <p class="count-text ">휴가 사용일 수</p>
-                                    </div>
-                                </div>
-                                <div class="col">
-                                    <div class="counter">
-                                        <i class="far fa-sad-tear fa-2x"></i>
-                                        <h2></h2>
-                                        <p class="count-text ">휴가 잔여일 수</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                <div className="row" style={{ marginTop: '30px' }}>
+                    <br />
+                    <div className="col text-center">
+                        <h2>개인 휴가 정보</h2>
+                        <p>발생일 수, 사용일 수, 잔여일 수 표시</p>
                     </div>
                 </div>
-		    </div>
+                <div className="row text-center">
+                    <div className="col">
+                        <Counter>
+                            <FaUmbrellaBeach />
+                            <h2>0</h2>
+                            <CountText>휴가 발생일 수</CountText>
+                        </Counter>
+                    </div>
+                    <div className="col">
+                        <Counter>
+                            <FaPlane />
+                            <h2>1</h2>
+                            <CountText>휴가 사용일 수</CountText>
+                        </Counter>
+                    </div>
+                    <div className="col">
+                        <Counter>
+                            <FaRegCalendarCheck />
+                            <h2>1</h2>
+                            <CountText>휴가 잔여일 수</CountText>
+                        </Counter>
+                    </div>
+                </div>
+            </div>
         </>
     );
-}
+};
 export default MainPage;
