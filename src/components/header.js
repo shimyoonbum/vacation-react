@@ -1,5 +1,5 @@
 import React from 'react';
-import { Nav, Navbar, NavDropdown } from 'react-bootstrap';
+import { Nav, Navbar} from 'react-bootstrap';
 import imgfile from '../resources/img/metanet.png';
 
 function Header() {
@@ -9,24 +9,15 @@ function Header() {
     };
     return (
         <>
-            <Navbar bg="light" expand="lg" style={{zIndex : '99', boxShadow: '0 1px 10px rgba(0, 0, 0, 0.3)'}}>
-                <Navbar.Brand href="/main">
+            <Navbar fixed="top" bg="light" expand="lg" style={{zIndex : '99', boxShadow: '0 1px 10px rgba(0, 0, 0, 0.3)'}}>
+                <Navbar.Brand href="/main" style={{fontSize:'20px', margin:'0px 10px'}}>
                     <img src={imgfile} alt="Metanet"></img>
                 </Navbar.Brand>
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse id="basic-navbar-nav">
-                    <Nav className="mr-auto">
-                        <Nav.Link href="#home">Home</Nav.Link>
-                        <Nav.Link href="/profile">Profile</Nav.Link>
-                        <NavDropdown title="Dropdown" id="basic-nav-dropdown">
-                            <NavDropdown.Item href="#action/3.1">
-                                1
-                            </NavDropdown.Item>
-                            <NavDropdown.Divider />
-                            <NavDropdown.Item href="#action/3.2">
-                                2
-                            </NavDropdown.Item>
-                        </NavDropdown>
+                    <Nav className="mr-auto" style={{fontSize:'20px', margin:'0px 10px'}}>
+                        <Nav.Link href="/main" style={{margin:'0px 10px'}}>홈</Nav.Link>
+                        <Nav.Link href="/apply" style={{margin:'0px 10px'}}>휴가 등록</Nav.Link>
                     </Nav>
                 </Navbar.Collapse>
                 <Navbar.Collapse className="justify-content-end">
