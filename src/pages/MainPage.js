@@ -5,7 +5,8 @@ import Header from '../components/Header';
 import { BiUser, BiPhoneCall, BiSitemap, BiBuilding } from 'react-icons/bi';
 import { BsBuilding, BsCalendar, BsEnvelope } from 'react-icons/bs';
 import { FaUmbrellaBeach, FaPlane, FaRegCalendarCheck } from 'react-icons/fa';
-import { Accordion, Card, OverlayTrigger, Tooltip, Button } from 'react-bootstrap';
+import { Accordion, Card, OverlayTrigger, Tooltip } from 'react-bootstrap';
+import Button from '../components/Button';
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -15,7 +16,7 @@ const GlobalStyle = createGlobalStyle`
 
 const Notice = styled.div`
     padding: 10px;
-    background-color: #FAFAE0;
+    background-color: #fafae0;
     border-left: 6px solid #7f7f84;
     box-shadow: 0 5px 8px -6px rgba(0, 0, 0, 0.2);
 `;
@@ -25,8 +26,8 @@ const NoticeBlock = styled.div`
 `;
 
 const HelloTitle = styled.div`
-    text-align : center;
-    font-size : 20px;
+    text-align: center;
+    font-size: 20px;
 `;
 
 const CountText = styled.p`
@@ -50,18 +51,27 @@ const MainPage = () => {
             <Header />
             <div className="container">
                 <h2>USERINFO</h2>
-                <hr/>
+                <hr />
 
                 <HelloTitle>
-                    <p><strong>심윤범</strong> 님 환영합니다!</p>
+                    <p>
+                        <strong>심윤범</strong> 님 환영합니다!
+                    </p>
                 </HelloTitle>
 
                 <Accordion>
                     <Card>
-                        <Card.Header style={{background: 'lightgoldenrodyellow', cursor: 'pointer'}}>
+                        <Card.Header
+                            style={{
+                                background: 'lightgoldenrodyellow',
+                                cursor: 'pointer',
+                            }}
+                        >
                             <OverlayTrigger
                                 overlay={
-                                    <Tooltip>클릭하여 프로필 정보 확인!</Tooltip>
+                                    <Tooltip>
+                                        클릭하여 프로필 정보 확인!
+                                    </Tooltip>
                                 }
                             >
                                 <Accordion.Toggle
@@ -69,13 +79,29 @@ const MainPage = () => {
                                     variant="link"
                                     eventKey="0"
                                 >
-                                    <div style={{display : 'flex', margin: '10px auto'}}>
-                                        <div style={{flex : 1}}>
+                                    <div
+                                        style={{
+                                            display: 'flex',
+                                            margin: '10px auto',
+                                        }}
+                                    >
+                                        <div style={{ flex: 1 }}></div>
+                                        <div
+                                            style={{
+                                                flex: 1,
+                                                textAlign: 'center',
+                                                fontSize: '25px',
+                                            }}
+                                        >
+                                            사원코드 : <strong>E00001</strong>
                                         </div>
-                                        <div style={{flex : 1, textAlign : 'center', fontSize : '25px'}}>                                            
-                                        사원코드 : <strong>E00001</strong>
-                                        </div>
-                                        <div style={{flex : 1, textAlign : 'end', width: '100px'}}>
+                                        <div
+                                            style={{
+                                                flex: 1,
+                                                textAlign: 'end',
+                                                width: '100px',
+                                            }}
+                                        >
                                             <Button>Profile</Button>
                                         </div>
                                     </div>
@@ -129,21 +155,27 @@ const MainPage = () => {
                 <div className="row text-center">
                     <div className="col">
                         <Counter>
-                            <FaUmbrellaBeach style={{fontSize: '30px', color: 'aqua'}}/>
+                            <FaUmbrellaBeach
+                                style={{ fontSize: '30px', color: 'aqua' }}
+                            />
                             <h2>15</h2>
                             <CountText>휴가 발생일 수</CountText>
                         </Counter>
                     </div>
                     <div className="col">
                         <Counter>
-                            <FaPlane style={{fontSize: '30px', color: 'aqua'}}/>
+                            <FaPlane
+                                style={{ fontSize: '30px', color: 'aqua' }}
+                            />
                             <h2>1</h2>
                             <CountText>휴가 사용일 수</CountText>
                         </Counter>
                     </div>
                     <div className="col">
                         <Counter>
-                            <FaRegCalendarCheck style={{fontSize: '30px', color: 'aqua'}}/>
+                            <FaRegCalendarCheck
+                                style={{ fontSize: '30px', color: 'aqua' }}
+                            />
                             <h2>14</h2>
                             <CountText>휴가 잔여일 수</CountText>
                         </Counter>

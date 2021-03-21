@@ -1,11 +1,12 @@
 import React, { useState, useRef } from 'react';
 import styled from 'styled-components';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Form, Button, Badge, InputGroup } from 'react-bootstrap';
+import { Form, Badge, InputGroup } from 'react-bootstrap';
 import { BiUser } from 'react-icons/bi';
 import { CgPassword } from 'react-icons/cg';
 import { createGlobalStyle } from 'styled-components';
 import img from '../resources/img/main.jpg';
+import Button from '../components/Button';
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -15,9 +16,9 @@ const GlobalStyle = createGlobalStyle`
 
 const SignBlock = styled.div`
     position: absolute;
-    height: 70%;
-    width: 60%;
-    top: 20%;
+    height: 80%;
+    width: 50%;
+    top: 10%;
     left: 20%;
     right: 20%;
 
@@ -114,11 +115,14 @@ const SignPage = () => {
                 style={{ width: '80%', marginLeft: '10%', marginTop: '5%' }}
                 onSubmit={doLogin}
             >
-                <Form.Group controlId="formBasicEmail">
-                    <Form.Label>
-                        <h5>아이디</h5>
-                    </Form.Label>
-                    <InputGroup className="mb-3">
+                <Form.Group
+                    controlId="formBasicEmail"
+                    style={{ width: '80%', margin: 'auto' }}
+                >
+                    <InputGroup
+                        className="mb-3"
+                        style={{ width: '80%', margin: 'auto' }}
+                    >
                         <InputGroup.Prepend>
                             <InputGroup.Text>
                                 <BiUser></BiUser>
@@ -134,11 +138,14 @@ const SignPage = () => {
                         />
                     </InputGroup>
                 </Form.Group>
-                <Form.Group controlId="formBasicEmail">
-                    <Form.Label>
-                        <h5>패스워드</h5>
-                    </Form.Label>
-                    <InputGroup className="mb-3">
+                <Form.Group
+                    controlId="formBasicEmail"
+                    style={{ width: '80%', margin: 'auto' }}
+                >
+                    <InputGroup
+                        className="mb-3"
+                        style={{ width: '80%', margin: 'auto' }}
+                    >
                         <InputGroup.Prepend>
                             <InputGroup.Text>
                                 <CgPassword></CgPassword>
@@ -153,10 +160,33 @@ const SignPage = () => {
                         />
                     </InputGroup>
                 </Form.Group>
-                <Button type="submit" variant="primary">
-                    로그인
-                </Button>
+                <div style={{ textAlign: 'center', marginTop: '30px' }}>
+                    <Button type="submit" color="gray" outline halfWidth>
+                        로그인
+                    </Button>
+                </div>
             </Form>
+            <div
+                style={{
+                    textAlign: 'center',
+                    fontSize: '23px',
+                    margin: '3px',
+                }}
+            >
+                or
+            </div>
+            <div
+                style={{
+                    width: '80%',
+                    marginLeft: '10%',
+                    marginTop: '1%',
+                    textAlign: 'center',
+                }}
+            >
+                <Button type="submit" color="pink" outline halfWidth>
+                    Forgot PassWord
+                </Button>
+            </div>
         </SignBlock>
     );
 };
