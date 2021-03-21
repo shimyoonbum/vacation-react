@@ -1,0 +1,23 @@
+$color : #f8f9fa;
+@import url('https://cdnjs.cloudflare.com/ajax/libs/react-datepicker/2.8.0/react-datepicker.min.css');
+.mr-auto{
+    margin : 0px 10px;    
+}
+
+.link{
+    font-size:20px;
+    margin : 0px 10px;
+    &:hover{
+        background: darken($color, 10%);
+    }
+    &:active{
+        background: lighten($color, 10%);
+    }
+}
+
+.react-datepicker__input-container input {
+    width: 100%;
+    border: 1px solid #ced4da ;
+    border-radius: .25rem;
+    height: calc(1.5em + .75rem + 2px);
+ }

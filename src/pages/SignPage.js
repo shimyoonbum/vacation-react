@@ -15,7 +15,7 @@ const GlobalStyle = createGlobalStyle`
 
 const SignBlock = styled.div`
     position: absolute;
-    height: 60%;
+    height: 70%;
     width: 60%;
     top: 20%;
     left: 20%;
@@ -50,7 +50,6 @@ const SignPage = () => {
         nameInput.current.focus(); //객체 활용해 커서 초기화
     };
 
-    //책 등록 실행 함수
     const doLogin = (e) => {
         e.preventDefault(); // submit이 action을 안타고 자기 할일을 그만함.
 
