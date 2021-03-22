@@ -5,6 +5,7 @@ import { createGlobalStyle } from 'styled-components';
 import { Table, Modal, Container, Form } from 'react-bootstrap';
 import DatePicker from 'react-datepicker';
 import Button from '../components/Button';
+import Dialog from '../components/Dialog';
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -23,12 +24,29 @@ const Block = styled.div`
 
 const ApplyPage = () => {
     const [show, setShow] = useState(false);
-    const [code, setCode] = useState({ value: 'select' });
+    const [code, setCode] = useState("VK1");
     const [reason, setReason] = useState('');
     const [startDate, setStartDate] = useState(new Date());
     const [endDate, setEndDate] = useState(new Date());
     const [countDate, setCountDate] = useState(new Date());
 
+    const [dialog, setDialog] = useState(false);
+
+    //Dialog 오픈
+    const onDialog = () => {
+      setDialog(true);
+    };
+
+    //Dialog 확인 클릭
+    const onConfirm = () => {
+      setDialog(false);
+    };
+
+    //Dialog 취소 클릭
+    const onCancel = () => {
+      setDialog(false);
+    };
+    //휴가 등록 모달창 close
     const handleClose = () => {
         let json = {
             va_start_date: getFormatDate(startDate),
@@ -41,6 +59,7 @@ const ApplyPage = () => {
         console.log(json);
         setShow(false);
     };
+    //휴가 등록 모달창 open
     const handleShow = () => setShow(true);
 
     const doApply = (e) => {
@@ -100,13 +119,8 @@ const ApplyPage = () => {
         setCountDate(parseInt(dateDiff));
     };
 
-    const changeSelect = (select_obj) => {
-        // 우선 selectbox에서 선택된 index를 찾고
-        var selected_index = select_obj.selectedIndex;
-        // 선택된 index의 value를 찾고
-        var selected_value = select_obj.options[selected_index].value;
-        // 원하는 동작을 수행한다. 여기서는 그냥 alert해주는 식으로만 처리함.
-        alert(selected_value);
+    const changeSelect = (event) => {
+        setCode(event.target.value);
     };
 
     return (
@@ -186,19 +200,26 @@ const ApplyPage = () => {
                 </Modal.Header>
                 <Modal.Body>
                     <Form onSubmit={doApply}>
-                        <Form.Group controlId="exampleForm.ControlSelect1">
+                        <Form.Group controlId="ControlSelect1">
                             <Form.Label>휴가 유형</Form.Label>
                             <Form.Control
-                                value={code}
+                                defaultValue={code}
                                 as="select"
-                                onChange={changeSelect}
+                                onChange={e => setCode(e.target.value)}
+                                custom
                             >
-                                <option value="select">연차</option>
-                                <option value="select2">반차</option>
+                                <option value="VK1">연차</option>
+                                <option value="VK2">반차</option>
+                                <option value="VK3">출산전후휴가</option>
+                                <option value="VK4">출산휴가</option>
+                                <option value="VK5">경조사</option>
+                                <option value="VK6">보건휴가</option>
+                                <option value="VK7">병가</option>
+
                             </Form.Control>
                         </Form.Group>
 
-                        <Form.Group controlId="exampleForm.ControlInput1">
+                        <Form.Group controlId="ControlInput1">
                             <Form.Label>휴가 기간</Form.Label>
                             <div
                                 style={{ display: 'flex', textAlign: 'center' }}
@@ -228,7 +249,7 @@ const ApplyPage = () => {
                             </div>
                         </Form.Group>
 
-                        <Form.Group controlId="exampleForm.ControlInput1">
+                        <Form.Group controlId="ControlInput2">
                             <Form.Label>휴가 일수</Form.Label>
                             <Form.Control
                                 type="text"
@@ -258,11 +279,22 @@ const ApplyPage = () => {
                     <Button variant="secondary" onClick={handleClose}>
                         취소
                     </Button>
-                    <Button type="submit" variant="primary">
+                    <Button type="submit" variant="primary" onClick={handleClose}>
                         신청
                     </Button>
                 </Modal.Footer>
             </Modal>
+
+            <Dialog
+                title="휴가 등록"
+                confirmText="등록"
+                cancelText="취소"
+                onConfirm={onConfirm}
+                onCancel={onCancel}
+                visible={dialog}
+                >
+                휴가 등록 하시겠습니까?
+            </Dialog>
         </Container>
     );
 };

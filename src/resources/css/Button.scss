@@ -1,6 +1,8 @@
 $blue: #228be6;
 $gray: #495057;
 $pink: #f06595;
+$yellow: #f7e81e;
+$black: #000000;
 
 @mixin button-color($color) {
     background: $color;
@@ -68,11 +70,19 @@ $pink: #f06595;
     @include button-color($pink);
   }
 
+  &.yellow {
+    @include button-color($yellow);
+  }
+
+  &.black {
+    @include button-color($black);
+  }
+
   &.fullWidth {
     width: 100%;
     justify-content: center;
     align-items: center;
-    margin : auto;
+    margin : 0 auto;
     & + & {
       margin-left: 0;
       margin-top: 1rem;
@@ -83,7 +93,7 @@ $pink: #f06595;
     width: 65%;
     justify-content: center;
     align-items: center;
-    margin : auto;
+    margin : 0 auto;
     & + & {
       margin-left: 0;
       margin-top: 1rem;
@@ -91,6 +101,6 @@ $pink: #f06595;
   }
 
   & + & {
-    margin-left: 1rem;
+    margin-left: 0.5rem;
   }
 }
