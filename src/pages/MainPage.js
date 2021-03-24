@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import styled from 'styled-components';
 import { createGlobalStyle } from 'styled-components';
 import Header from '../components/Header';
@@ -44,7 +44,37 @@ const Counter = styled.div`
     border-radius: 5px;
 `;
 
+const getUserInfo = () =>{
+    var token = 'Bearer ' + window.sessionStorage.getItem('Authorization');
+
+    fetch('/api/user', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json; charset=utf-8',
+            'Authorization' : token
+        }        
+    })
+        .then((res) => {
+            if (res.status === 200) {
+                return res.json();
+            } else {
+                window.alert('서버 오류입니다. 관리자에게 문의 바랍니다.');
+            }
+        })
+        .then((res) => {
+            console.log(res.authorities[0]);
+            console.log(res.employee);
+        })
+        .catch((error) => {
+            console.error(error);
+        });
+}
+
 const MainPage = () => {
+    useEffect(() => {
+        getUserInfo();
+        return () => {};
+    }, []);
     return (
         <>
             <GlobalStyle />
