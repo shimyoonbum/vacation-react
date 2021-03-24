@@ -24,7 +24,7 @@ const Block = styled.div`
 
 const ApplyPage = () => {
     const [show, setShow] = useState(false);
-    const [code, setCode] = useState("VK1");
+    const [code, setCode] = useState('VK1');
     const [reason, setReason] = useState('');
     const [startDate, setStartDate] = useState(new Date());
     const [endDate, setEndDate] = useState(new Date());
@@ -34,17 +34,17 @@ const ApplyPage = () => {
 
     //Dialog 오픈
     const onDialog = () => {
-      setDialog(true);
+        setDialog(true);
     };
 
     //Dialog 확인 클릭
     const onConfirm = () => {
-      setDialog(false);
+        setDialog(false);
     };
 
     //Dialog 취소 클릭
     const onCancel = () => {
-      setDialog(false);
+        setDialog(false);
     };
     //휴가 등록 모달창 close
     const handleClose = () => {
@@ -205,7 +205,7 @@ const ApplyPage = () => {
                             <Form.Control
                                 defaultValue={code}
                                 as="select"
-                                onChange={e => setCode(e.target.value)}
+                                onChange={(e) => setCode(e.target.value)}
                                 custom
                             >
                                 <option value="VK1">연차</option>
@@ -215,7 +215,6 @@ const ApplyPage = () => {
                                 <option value="VK5">경조사</option>
                                 <option value="VK6">보건휴가</option>
                                 <option value="VK7">병가</option>
-
                             </Form.Control>
                         </Form.Group>
 
@@ -279,7 +278,11 @@ const ApplyPage = () => {
                     <Button variant="secondary" onClick={handleClose}>
                         취소
                     </Button>
-                    <Button type="submit" variant="primary" onClick={handleClose}>
+                    <Button
+                        type="submit"
+                        variant="primary"
+                        onClick={handleClose}
+                    >
                         신청
                     </Button>
                 </Modal.Footer>
@@ -292,7 +295,7 @@ const ApplyPage = () => {
                 onConfirm={onConfirm}
                 onCancel={onCancel}
                 visible={dialog}
-                >
+            >
                 휴가 등록 하시겠습니까?
             </Dialog>
         </Container>

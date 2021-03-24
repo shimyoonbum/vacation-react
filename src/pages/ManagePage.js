@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import Header from '../components/Header';
 import styled from 'styled-components';
 import { createGlobalStyle } from 'styled-components';
@@ -12,10 +12,10 @@ const GlobalStyle = createGlobalStyle`
 `;
 
 const Block = styled.div`
-    padding : 30px 40px;
-    margin : 10px;
-    background : #fff;
-    border-radius : 10px;
+    padding: 30px 40px;
+    margin: 10px;
+    background: #fff;
+    border-radius: 10px;
     box-shadow: 0px 1px 10px rgba(0, 0, 0, 0.3);
 `;
 
@@ -27,12 +27,12 @@ const ManagePage = () => {
     return (
         <Container>
             <GlobalStyle />
-            <Header /> 
+            <Header />
             <Block>
                 <h3>팀원 정보</h3>
-                <hr/>
+                <hr />
 
-                <Table striped bordered hover style={{textAlign : 'center'}}>
+                <Table striped bordered hover style={{ textAlign: 'center' }}>
                     <thead>
                         <tr>
                             <th>#</th>
@@ -60,12 +60,12 @@ const ManagePage = () => {
                         </tr>
                     </tbody>
                 </Table>
-            </Block> 
+            </Block>
             <Block>
                 <h3>휴가 승인 요청 내역</h3>
-                <hr/>
+                <hr />
 
-                <Table striped bordered hover style={{textAlign : 'center'}}>
+                <Table striped bordered hover style={{ textAlign: 'center' }}>
                     <thead>
                         <tr>
                             <th>#</th>
@@ -117,19 +117,21 @@ const ManagePage = () => {
 
             <Modal show={show} onHide={handleClose}>
                 <Modal.Header closeButton>
-                <Modal.Title>휴가 신규 신청</Modal.Title>
+                    <Modal.Title>휴가 신규 신청</Modal.Title>
                 </Modal.Header>
-                <Modal.Body>Woohoo, you're reading this text in a modal!</Modal.Body>
+                <Modal.Body>
+                    Woohoo, you're reading this text in a modal!
+                </Modal.Body>
                 <Modal.Footer>
-                <Button variant="secondary" onClick={handleClose}>
-                    Close
-                </Button>
-                <Button variant="primary" onClick={handleClose}>
-                    Save Changes
-                </Button>
+                    <Button variant="secondary" onClick={handleClose}>
+                        Close
+                    </Button>
+                    <Button variant="primary" onClick={handleClose}>
+                        Save Changes
+                    </Button>
                 </Modal.Footer>
             </Modal>
         </Container>
     );
-}
+};
 export default ManagePage;

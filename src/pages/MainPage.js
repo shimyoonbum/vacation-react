@@ -132,7 +132,9 @@ const MainPage = () => {
                                                 width: '100px',
                                             }}
                                         >
-                                            <Button color='black' outline>Profile</Button>
+                                            <Button color="black" outline>
+                                                Profile
+                                            </Button>
                                         </div>
                                     </div>
                                 </Accordion.Toggle>
