@@ -1,12 +1,13 @@
-import React, {useEffect} from 'react';
+import React, {useState, useEffect} from 'react';
 import styled from 'styled-components';
 import { createGlobalStyle } from 'styled-components';
 import Header from '../components/Header';
 import { BiUser, BiPhoneCall, BiSitemap, BiBuilding } from 'react-icons/bi';
-import { BsBuilding, BsCalendar, BsEnvelope } from 'react-icons/bs';
+import { BsCalendar, BsEnvelope } from 'react-icons/bs';
 import { FaUmbrellaBeach, FaPlane, FaRegCalendarCheck } from 'react-icons/fa';
 import { Accordion, Card, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import Button from '../components/Button';
+import { setHue } from 'polished';
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -44,33 +45,75 @@ const Counter = styled.div`
     border-radius: 5px;
 `;
 
-const getUserInfo = () =>{
-    var token = 'Bearer ' + window.sessionStorage.getItem('Authorization');
-
-    fetch('/api/user', {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json; charset=utf-8',
-            'Authorization' : token
-        }        
-    })
-        .then((res) => {
-            if (res.status === 200) {
-                return res.json();
-            } else {
-                window.alert('서버 오류입니다. 관리자에게 문의 바랍니다.');
-            }
-        })
-        .then((res) => {
-            console.log(res.authorities[0]);
-            console.log(res.employee);
-        })
-        .catch((error) => {
-            console.error(error);
-        });
-}
-
 const MainPage = () => {
+    const [empInfo, setEmpInfo] = useState({
+        empName: '',
+        empCode: '',
+        empRank: '',
+        orgName: '',
+        codeName: '',
+        joinDate: '',
+        phone: '',
+        email: '',
+        acqDaysNum: '',
+        useDaysNum: '',
+        resDaysNum: '',
+    });
+
+    const get = () => {
+        console.log(empInfo);
+    }
+
+    const getUserInfo = () =>{
+        var token = 'Bearer ' + window.sessionStorage.getItem('Authorization');
+    
+        fetch('/api/user', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json; charset=utf-8',
+                'Authorization' : token
+            }        
+        })
+            .then((res) => {
+                if (res.status === 200) {
+                    return res.json();
+                } else {
+                    window.alert('서버 오류입니다. 관리자에게 문의 바랍니다.');
+                }
+            })
+            .then((res) => {
+                // console.log('권한 : '+res.authorities[0]);
+                // console.log('사원코드 : '+res.employee.empCode);
+                // console.log('이름 : '+res.employee.empName);
+                // console.log('직위 : '+res.employee.empRank);
+                // console.log('조직이름 : '+res.employee.organization.orgName);
+                // console.log('조직구분 : '+res.employee.organization.code.codeName);
+                // console.log(res.employee.vacation.acqDaysNum);
+                // console.log(res.employee.vacation.useDaysNum);
+                // console.log(res.employee.vacation.resDaysNum);
+                // console.log('phone : '+res.employee.phone);
+                // console.log('email : '+res.username);
+                // console.log('입사일 : '+res.employee.joinDate);
+    
+                setEmpInfo({
+                    empName: res.employee.empName,
+                    empCode: res.employee.empCode,
+                    empRank: res.employee.empRank,
+                    orgName: res.employee.organization.orgName,
+                    codeName: res.employee.organization.code.codeName,
+                    joinDate: res.employee.joinDate,
+                    phone: res.employee.phone,
+                    email: res.username,
+                    acqDaysNum: res.employee.vacation.acqDaysNum,
+                    useDaysNum: res.employee.vacation.useDaysNum,
+                    resDaysNum: res.employee.vacation.resDaysNum
+                });                
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    }
+
     useEffect(() => {
         getUserInfo();
         return () => {};
@@ -132,7 +175,7 @@ const MainPage = () => {
                                                 width: '100px',
                                             }}
                                         >
-                                            <Button color="black" outline>
+                                            <Button color="black" onClick={get} outline>
                                                 Profile
                                             </Button>
                                         </div>
@@ -154,11 +197,7 @@ const MainPage = () => {
                                     <NoticeBlock>
                                         <BiUser />
                                         &nbsp;조직 구분 :
-                                    </NoticeBlock>
-                                    <NoticeBlock>
-                                        <BsBuilding />
-                                        &nbsp;상위 조직 :
-                                    </NoticeBlock>
+                                    </NoticeBlock>                                   
                                     <NoticeBlock>
                                         <BsCalendar />
                                         &nbsp;입사일 :
@@ -187,27 +226,21 @@ const MainPage = () => {
                 <div className="row text-center">
                     <div className="col">
                         <Counter>
-                            <FaUmbrellaBeach
-                                style={{ fontSize: '30px', color: 'aqua' }}
-                            />
+                            <FaUmbrellaBeach style={{ fontSize: '30px', color: 'aqua' }}/>
                             <h2>15</h2>
                             <CountText>휴가 발생일 수</CountText>
                         </Counter>
                     </div>
                     <div className="col">
                         <Counter>
-                            <FaPlane
-                                style={{ fontSize: '30px', color: 'aqua' }}
-                            />
+                            <FaPlane style={{ fontSize: '30px', color: 'aqua' }}/>
                             <h2>1</h2>
                             <CountText>휴가 사용일 수</CountText>
                         </Counter>
                     </div>
                     <div className="col">
                         <Counter>
-                            <FaRegCalendarCheck
-                                style={{ fontSize: '30px', color: 'aqua' }}
-                            />
+                            <FaRegCalendarCheck style={{ fontSize: '30px', color: 'aqua' }}/>
                             <h2>14</h2>
                             <CountText>휴가 잔여일 수</CountText>
                         </Counter>
