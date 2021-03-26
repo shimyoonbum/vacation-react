@@ -13,11 +13,11 @@ function Header() {
         <>
             <Navbar
                 fixed="top"
-                bg="light"
                 expand="lg"
                 style={{
                     zIndex: '99',
                     boxShadow: '0 1px 10px rgba(0, 0, 0, 0.3)',
+                    backgroundColor : '#F1F2F6'
                 }}
             >
                 <Navbar.Brand

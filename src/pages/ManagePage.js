@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useState, useEffect} from 'react';
 import Header from '../components/Header';
 import styled from 'styled-components';
 import { createGlobalStyle } from 'styled-components';
@@ -21,9 +21,63 @@ const Block = styled.div`
 
 const ManagePage = () => {
     const [show, setShow] = useState(false);
-
+    const [empInfo, setEmpInfo] = useState({
+        empName: '',
+        empCode: '',
+        empRank: '',
+        orgName: '',
+        codeName: '',
+        joinDate: '',
+        phone: '',
+        email: '',
+        acqDaysNum: '',
+        useDaysNum: '',
+        resDaysNum: '',
+    });
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
+
+    const getUserInfo = () =>{
+        var token = 'Bearer ' + window.sessionStorage.getItem('Authorization');
+    
+        fetch('/api/user', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json; charset=utf-8',
+                'Authorization' : token
+            }        
+        })
+            .then((res) => {
+                if (res.status === 200) {
+                    return res.json();
+                } else {
+                    window.alert('서버 오류입니다. 관리자에게 문의 바랍니다.');
+                }
+            })
+            .then((res) => {    
+                setEmpInfo({
+                    empName: res.employee.empName,
+                    empCode: res.employee.empCode,
+                    empRank: res.employee.empRank,
+                    orgName: res.employee.organization.orgName,
+                    codeName: res.employee.organization.code.codeName,
+                    joinDate: res.employee.joinDate,
+                    phone: res.employee.phone,
+                    email: res.username,
+                    acqDaysNum: res.employee.vacation.acqDaysNum,
+                    useDaysNum: res.employee.vacation.useDaysNum,
+                    resDaysNum: res.employee.vacation.resDaysNum
+                });                
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    }
+    useEffect(() => {
+        getUserInfo();
+        return () => {};
+    }, []);
+
     return (
         <Container>
             <GlobalStyle />

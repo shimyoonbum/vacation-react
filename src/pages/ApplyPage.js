@@ -32,6 +32,8 @@ const ApplyPage = () => {
 
     const [dialog, setDialog] = useState(false);
 
+    const [empInfo, setEmpInfo] = useState([]);
+
     //Dialog 오픈
     const onDialog = () => {
         setDialog(true);
@@ -57,6 +59,7 @@ const ApplyPage = () => {
         };
 
         console.log(json);
+        console.log(empInfo);
         setShow(false);
     };
     //휴가 등록 모달창 open
@@ -93,10 +96,37 @@ const ApplyPage = () => {
         return year + '' + month + '' + day; //'-' 추가하여 yyyy-mm-dd 형태 생성 가능
     };
 
-    useEffect(() => {
-        calDate();
-        return () => {};
-    }, [startDate, endDate, countDate]);
+    const getUserInfo = () =>{
+        var token = 'Bearer ' + window.sessionStorage.getItem('Authorization');
+    
+        fetch('/api/user', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json; charset=utf-8',
+                'Authorization' : token
+            }        
+        })
+        .then((res) => {
+            if (res.status === 200) {
+                return res.json();
+            } else {
+                window.alert('서버 오류입니다. 관리자에게 문의 바랍니다.');
+            }
+        })
+        .then((res) => {    
+            console.log(res.employee.register);            
+            setEmpInfo([{
+                empRank: res.employee.empRank,
+                orgName: res.employee.organization.orgName,
+                empUpper: res.employee.empUpper,
+                joinDate: res.employee.joinDate,
+                resDaysNum: res.employee.vacation.resDaysNum
+            }]);   
+        })
+        .catch((error) => {
+            console.error(error);
+        });
+    }    
 
     const calDate = () => {
         //휴가일수 계산
@@ -119,9 +149,14 @@ const ApplyPage = () => {
         setCountDate(parseInt(dateDiff));
     };
 
-    const changeSelect = (event) => {
-        setCode(event.target.value);
-    };
+    useEffect(() => {
+        calDate();
+        return () => {};
+    }, [startDate, endDate, countDate]);
+
+    useEffect(() => {
+        getUserInfo();
+    }, []);  
 
     return (
         <Container>
@@ -135,22 +170,26 @@ const ApplyPage = () => {
                     <thead>
                         <tr>
                             <th>#</th>
-                            <th>회사명</th>
+                            <th>조직</th>
                             <th>직급</th>
                             <th>입사일자</th>
                             <th>상위자</th>
                             <th>남은 휴가일수</th>
                         </tr>
-                    </thead>
+                    </thead>                    
                     <tbody>
-                        <tr>
-                            <td>1</td>
-                            <td>Mark</td>
-                            <td>Otto</td>
-                            <td>mdo</td>
-                            <td>qqe</td>
-                            <td>15.0</td>
-                        </tr>
+                    {
+                        empInfo.map((data, index)=>
+                            <tr key={index}>
+                                <td>1</td>
+                                <td>{data.orgName}</td>
+                                <td>{data.empRank}</td>
+                                <td>{data.joinDate}</td>
+                                <td>{data.empUpper}</td>
+                                <td>{data.resDaysNum}</td>
+                            </tr>
+                        )
+                    }
                     </tbody>
                 </Table>
 
