@@ -21,3 +21,17 @@ $color : #f8f9fa;
     border-radius: .25rem;
     height: calc(1.5em + .75rem + 2px);
  }
+
+ .table td, .table th {
+    text-align: center;
+    padding: .75rem;
+    vertical-align: middle;
+    border-top: 1px solid #dee2e6;
+}
+
+/*체크 박스 css*/
+input[type=checkbox]
+{
+  /* Double-sized Checkboxes */
+  -webkit-transform: scale(1.5);  
+}

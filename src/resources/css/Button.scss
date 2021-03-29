@@ -1,6 +1,7 @@
 $blue: #228be6;
 $gray: #495057;
 $pink: #f06595;
+$red: #fa0404;
 $yellow: #f7e81e;
 $black: #000000;
 
@@ -76,6 +77,10 @@ $black: #000000;
 
   &.black {
     @include button-color($black);
+  }
+
+  &.red {
+    @include button-color($red);
   }
 
   &.fullWidth {

@@ -25,6 +25,7 @@ const Block = styled.div`
 const ApplyPage = () => {
     const [show, setShow] = useState(false);
     const [code, setCode] = useState('VK1');
+    const [check, setCheck] = useState(false);
     const [reason, setReason] = useState('');
     const [startDate, setStartDate] = useState(new Date());
     const [endDate, setEndDate] = useState(new Date());
@@ -33,6 +34,10 @@ const ApplyPage = () => {
     const [dialog, setDialog] = useState(false);
 
     const [empInfo, setEmpInfo] = useState([]);
+    const [empReg, setEmpReg] = useState([]);
+
+    // checked 된 것들
+    const [checkItems, setCheckItems] = useState([]);
 
     //Dialog 오픈
     const onDialog = () => {
@@ -48,11 +53,16 @@ const ApplyPage = () => {
     const onCancel = () => {
         setDialog(false);
     };
+
+    const deleteModal = () => {
+        console.log(empReg);
+    }
+
     //휴가 등록 모달창 close
     const handleClose = () => {
         let json = {
-            va_start_date: getFormatDate(startDate),
-            va_end_date: getFormatDate(endDate),
+            reg_start_date: getFormatDate(startDate),
+            reg_end_date: getFormatDate(endDate),
             va_days_num: countDate,
             vk_code: code,
             va_reason: reason,
@@ -113,15 +123,34 @@ const ApplyPage = () => {
                 window.alert('서버 오류입니다. 관리자에게 문의 바랍니다.');
             }
         })
-        .then((res) => {    
-            console.log(res.employee.register);            
+        .then((res) => {          
+            var emp = res.employee.register;
+            
+            for (let i = 0; i < emp.length; i++) {
+                emp[i].vkCode= emp[i].vkCode.codeName;
+
+                switch (emp[i].vsCode) {
+                    case 'VS1':
+                        emp[i].vsCode = '대기';
+                        break;
+                    case 'VS2':
+                        emp[i].vsCode = '승인';
+                        break;
+                    case 'VS3':
+                        emp[i].vsCode = '반려';
+                        break;
+                }
+            }
+
             setEmpInfo([{
                 empRank: res.employee.empRank,
                 orgName: res.employee.organization.orgName,
                 empUpper: res.employee.empUpper,
                 joinDate: res.employee.joinDate,
                 resDaysNum: res.employee.vacation.resDaysNum
-            }]);   
+            }]);
+
+            setEmpReg(res.employee.register);           
         })
         .catch((error) => {
             console.error(error);
@@ -147,7 +176,72 @@ const ApplyPage = () => {
         if (endDay === 6 && startDay !== 0) dateDiff = dateDiff - 1;
         //일자 state에 반영
         setCountDate(parseInt(dateDiff));
-    };
+    };    
+
+    // 개별선택
+    function checkHandler(checked, id) {
+        if(checked) {
+            setCheckItems([...checkItems, id])
+        } else {
+            // 체크해제
+            setCheckItems(checkItems.filter(data=>data!==id))
+        }
+    }
+
+    // 전체선택
+    function checkAllHandler(checked) {
+        if(checked) {
+            const ids = []
+            empReg.forEach(data => ids.push(data.id))
+            setCheckItems(ids)
+        } else {
+            setCheckItems([])
+        }
+    }
+
+    // 일괄 삭제
+    const handleCheckedAllDelete = () => {
+
+        if(checkItems.length < 1)
+            alert('일괄 삭제할 항목이 존재하지 않습니다!');
+
+        else{
+            
+            var token = 'Bearer ' + window.sessionStorage.getItem('Authorization');
+            let items = {
+                ids : checkItems
+            }
+
+            console.log(items);
+
+            fetch('/vacation/deleteReg', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json; charset=utf-8',
+                    'Authorization' : token
+                },
+                body : items       
+            })
+            .then((res) => {
+                if (res.status === 200) {
+                    return res.json();
+                } else {
+                    window.alert('서버 오류입니다. 관리자에게 문의 바랍니다.');
+                }
+            })
+            .then((res) => {
+                console.log(res);
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+        }
+    }
+
+    // 개별 삭제
+    const handleCheckedDelete = () => {
+        setShow(true);
+    }
 
     useEffect(() => {
         calDate();
@@ -157,6 +251,10 @@ const ApplyPage = () => {
     useEffect(() => {
         getUserInfo();
     }, []);  
+
+    useEffect(() => {
+        console.log(checkItems);
+    }, [checkItems]);
 
     return (
         <Container>
@@ -169,7 +267,6 @@ const ApplyPage = () => {
                 <Table striped bordered hover style={{ textAlign: 'center' }}>
                     <thead>
                         <tr>
-                            <th>#</th>
                             <th>조직</th>
                             <th>직급</th>
                             <th>입사일자</th>
@@ -181,7 +278,6 @@ const ApplyPage = () => {
                     {
                         empInfo.map((data, index)=>
                             <tr key={index}>
-                                <td>1</td>
                                 <td>{data.orgName}</td>
                                 <td>{data.empRank}</td>
                                 <td>{data.joinDate}</td>
@@ -193,43 +289,68 @@ const ApplyPage = () => {
                     </tbody>
                 </Table>
 
-                <Button variant="secondary" onClick={handleShow}>
-                    신규 신청
-                </Button>
+                <div style={{ textAlign: 'end'}}>
+                    <Button color="black" outline onClick={handleShow}>
+                        신규 신청
+                    </Button>
+                </div>
+
+                
             </Block>
             <Block>
                 <h3>휴가 신청 내역</h3>
                 <hr />
+                <div style={{ textAlign: 'end', marginBottom : '10px' }}>
+                    <Button color="black" outline onClick={handleCheckedAllDelete}>
+                        일괄 삭제
+                    </Button>
+                </div>                
 
-                <Table striped bordered hover style={{ textAlign: 'center' }}>
+                <Table striped bordered>
                     <thead>
                         <tr>
-                            <th>#</th>
-                            <th>회사명</th>
-                            <th>직급</th>
-                            <th>입사일자</th>
-                            <th>상위자</th>
-                            <th>남은 휴가일수</th>
+                            {/* <th><input type="checkbox" id="checkall" checked={check} onChange={handleChecked}></input></th> */}
+                            <th>
+                            <Form.Check
+                                type={"checkbox"}
+                                onChange={(e) => checkAllHandler(e.target.checked)}
+                            >
+                            </Form.Check>
+                            </th>
+                            <th>휴가유형</th>
+                            <th>휴가기간</th>
+                            <th>상태</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>1</td>
-                            <td>Mark</td>
-                            <td>Otto</td>
-                            <td>mdo</td>
-                            <td>qqe</td>
-                            <td>15.0</td>
-                        </tr>
-                        <tr>
-                            <td>1</td>
-                            <td>Mark</td>
-                            <td>Otto</td>
-                            <td>mdo</td>
-                            <td>qqe</td>
-                            <td>15.0</td>
-                        </tr>
-                    </tbody>
+                    {
+                        empReg.map((data)=>
+                            <tr key={data.id}>
+                                <td style={{display : 'none'}}>{data.id}</td>
+                                <td>
+                                    <Form.Check
+                                        type={"checkbox"}
+                                        onChange={(e) => checkHandler(e.target.checked, data.id)}
+                                        checked={checkItems.indexOf(data.id) >= 0 ? true : false}
+                                    >
+                                    </Form.Check>
+                                </td>
+                                <td>{data.vkCode}</td>
+                                <td>{data.regStartDate} ~ {data.regEndDate}</td>
+                                <td>{data.vsCode}</td>
+                                <td>
+                                    <Button color="blue" outline onClick={handleShow}>
+                                        수정
+                                    </Button>
+                                    <Button color="red" outline onClick={deleteModal}>
+                                        삭제
+                                    </Button>
+                                </td>
+                            </tr>
+                        )
+                    }
+                    </tbody> 
                 </Table>
             </Block>
 
