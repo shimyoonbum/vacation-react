@@ -22,6 +22,16 @@ const Block = styled.div`
     box-shadow: 0px 1px 10px rgba(0, 0, 0, 0.3);
 `;
 
+const FormInput = styled.div`
+    display: flex;
+    text-align: center;
+`;
+
+const FormButton = styled.div`
+    flex: 1; 
+    text-align: start;
+`;
+
 const ApplyPage = () => {
     const [show, setShow] = useState(false);
     const [code, setCode] = useState('VK1');
@@ -52,11 +62,7 @@ const ApplyPage = () => {
     //Dialog 취소 클릭
     const onCancel = () => {
         setDialog(false);
-    };
-
-    const deleteModal = () => {
-        console.log(empReg);
-    };
+    };    
 
     //휴가 등록 모달창 close
     const handleClose = () => {
@@ -73,7 +79,15 @@ const ApplyPage = () => {
         setShow(false);
     };
     //휴가 등록 모달창 open
-    const handleShow = () => setShow(true);
+    const handleShow = (id) => {
+        console.log(id);
+        
+        let n = empReg.filter(reg => reg.id === id);
+        setCode(n[0].vkCode); 
+        
+
+        setShow(true);
+    }
 
     const doApply = (e) => {
         e.preventDefault(); // submit이 action을 안타고 자기 할일을 그만함.
@@ -107,6 +121,10 @@ const ApplyPage = () => {
     };
 
     const getUserInfo = () => {
+
+        if(window.sessionStorage.getItem('Authorization') == null)
+            document.location.href = '/';
+
         var token = 'Bearer ' + window.sessionStorage.getItem('Authorization');
 
         fetch('/api/user', {
@@ -119,6 +137,9 @@ const ApplyPage = () => {
             .then((res) => {
                 if (res.status === 200) {
                     return res.json();
+                } else if(res.status === 401){
+                    window.alert('로그인이 필요합니다.');
+                    document.location.href = '/';
                 } else {
                     window.alert('서버 오류입니다. 관리자에게 문의 바랍니다.');
                 }
@@ -127,17 +148,19 @@ const ApplyPage = () => {
                 var emp = res.employee.register;
 
                 for (let i = 0; i < emp.length; i++) {
-                    emp[i].vkCode = emp[i].vkCode.codeName;
+                    emp[i].vkCodeName = emp[i].vkCode.codeName;         //휴가 이름              
+                    emp[i].vkCodeValue = emp[i].vkCode.codeValue;       //휴가 값(0.5 혹은 1)             
+                    emp[i].vkCode = emp[i].vkCode.code;                 //휴가 유형 코드
 
                     switch (emp[i].vsCode) {
                         case 'VS1':
-                            emp[i].vsCode = '대기';
+                            emp[i].vsCodeName = '대기';
                             break;
                         case 'VS2':
-                            emp[i].vsCode = '승인';
+                            emp[i].vsCodeName = '승인';
                             break;
                         case 'VS3':
-                            emp[i].vsCode = '반려';
+                            emp[i].vsCodeName = '반려';
                             break;
                         default:
                             break;
@@ -209,14 +232,11 @@ const ApplyPage = () => {
         if (checkItems.length < 1)
             alert('일괄 삭제할 항목이 존재하지 않습니다!');
         else {
-            var token =
-                'Bearer ' + window.sessionStorage.getItem('Authorization');
+            var token = 'Bearer ' + window.sessionStorage.getItem('Authorization');
             let items = {
                 ids: checkItems,
                 code: empInfo[0].empCode,
             };
-
-            console.log(items);
 
             fetch('/vacation/deleteReg', {
                 method: 'DELETE',
@@ -226,23 +246,59 @@ const ApplyPage = () => {
                 },
                 body: JSON.stringify(items),
             })
-                .then((res) => {
-                    if (res.status === 200) {
-                        console.log(JSON.parse(res.json()));
-                    } else {
-                        window.alert(
-                            '서버 오류입니다. 관리자에게 문의 바랍니다.',
-                        );
-                    }
-                })
-                .catch((error) => {
-                    console.error(error);
-                });
+            .then((res) => {
+                if (res.status === 200) {
+                    return res.json();
+                } else {
+                    window.alert('서버 오류입니다. 관리자에게 문의 바랍니다.');
+                }
+            })
+            .then((res) => {
+                if(res.result > 0){
+                    alert('일괄 삭제 처리 하였습니다.');                    
+                    getUserInfo();
+                }
+                else
+                    alert('삭제에 실패하였습니다..');                    
+            })
+            .catch((error) => {
+                console.error(error);
+            });
         }
     };
 
     // 개별 삭제
-    const handleCheckedDelete = () => {};
+    const handleCheckedDelete = (id) => {
+        var token = 'Bearer ' + window.sessionStorage.getItem('Authorization');
+
+        fetch(`/vacation/deleteReg/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json; charset=utf-8',
+                Authorization: token,
+            }
+        })
+        .then((res) => {
+            if (res.status === 200) {
+                return res.json();
+            } else {
+                window.alert('서버 오류입니다. 관리자에게 문의 바랍니다.');
+            }
+        })
+        .then((res) => {
+            console.log(res);
+
+            if(res > 0){
+                alert('삭제 처리 하였습니다.');                    
+                getUserInfo();
+            }
+            else
+                alert('삭제에 실패하였습니다..');                    
+        })
+        .catch((error) => {
+            console.error(error);
+        });
+    };
 
     useEffect(() => {
         calDate();
@@ -252,10 +308,6 @@ const ApplyPage = () => {
     useEffect(() => {
         getUserInfo();
     }, []);
-
-    useEffect(() => {
-        // console.log(checkItems);
-    }, [checkItems]);
 
     return (
         <Container>
@@ -289,32 +341,21 @@ const ApplyPage = () => {
                 </Table>
 
                 <div style={{ textAlign: 'end' }}>
-                    <Button color="black" outline onClick={handleShow}>
-                        신규 신청
-                    </Button>
+                    <Button color="black" outline onClick={handleShow}>신규 신청</Button>
                 </div>
             </Block>
             <Block>
                 <h3>휴가 신청 내역</h3>
                 <hr />
                 <div style={{ textAlign: 'end', marginBottom: '10px' }}>
-                    <Button
-                        color="black"
-                        outline
-                        onClick={handleCheckedAllDelete}
-                    >
-                        일괄 삭제
-                    </Button>
+                    <Button color="black" outline onClick={handleCheckedAllDelete}>일괄 삭제</Button>
                 </div>
 
                 <Table striped bordered>
                     <thead>
                         <tr>
-                            {/* <th><input type="checkbox" id="checkall" checked={check} onChange={handleChecked}></input></th> */}
                             <th>
-                                <Form.Check
-                                    type={'checkbox'}
-                                    onChange={(e) =>
+                                <Form.Check type={'checkbox'} onChange={(e) =>
                                         checkAllHandler(e.target.checked)
                                     }
                                 ></Form.Check>
@@ -330,41 +371,18 @@ const ApplyPage = () => {
                             <tr key={data.id}>
                                 <td style={{ display: 'none' }}>{data.id}</td>
                                 <td>
-                                    <Form.Check
-                                        type={'checkbox'}
-                                        onChange={(e) =>
-                                            checkHandler(
-                                                e.target.checked,
-                                                data.id,
-                                            )
+                                    <Form.Check type={'checkbox'} onChange={(e) =>
+                                            checkHandler(e.target.checked, data.id)
                                         }
-                                        checked={
-                                            checkItems.indexOf(data.id) >= 0
-                                                ? true
-                                                : false
-                                        }
+                                        checked={checkItems.indexOf(data.id) >= 0 ? true : false}
                                     ></Form.Check>
                                 </td>
-                                <td>{data.vkCode}</td>
+                                <td>{data.vkCodeName}</td>
+                                <td>{data.regStartDate} ~ {data.regEndDate}</td>
+                                <td>{data.vsCodeName}</td>
                                 <td>
-                                    {data.regStartDate} ~ {data.regEndDate}
-                                </td>
-                                <td>{data.vsCode}</td>
-                                <td>
-                                    <Button
-                                        color="blue"
-                                        outline
-                                        onClick={handleShow}
-                                    >
-                                        수정
-                                    </Button>
-                                    <Button
-                                        color="red"
-                                        outline
-                                        onClick={deleteModal}
-                                    >
-                                        삭제
-                                    </Button>
+                                    <Button color="blue" outline onClick={() =>handleShow(data.id)}>수정</Button>
+                                    <Button color="red" outline onClick={() => handleCheckedDelete(data.id)}>삭제</Button>
                                 </td>
                             </tr>
                         ))}
@@ -398,82 +416,33 @@ const ApplyPage = () => {
 
                         <Form.Group controlId="ControlInput1">
                             <Form.Label>휴가 기간</Form.Label>
-                            <div
-                                style={{ display: 'flex', textAlign: 'center' }}
-                            >
-                                <div style={{ flex: 1, textAlign: 'start' }}>
-                                    시작
-                                    <DatePicker
-                                        selected={startDate}
-                                        onChange={(date) => setStartDate(date)}
-                                        style={{
-                                            border: '1px solid #ced4da',
-                                            borderRadius: '.25rem',
-                                        }}
-                                    />
-                                </div>
-                                <div style={{ flex: 1, textAlign: 'start' }}>
-                                    종료
-                                    <DatePicker
-                                        selected={endDate}
-                                        onChange={(date) => setEndDate(date)}
-                                        style={{
-                                            border: '1px solid #ced4da',
-                                            borderRadius: '.25rem',
-                                        }}
-                                    />
-                                </div>
-                            </div>
+                            <FormInput>
+                                <FormButton>시작<DatePicker selected={startDate} onChange={(date) => setStartDate(date)} className="datepicker"/>
+                                </FormButton>
+                                <FormButton>종료<DatePicker selected={endDate} onChange={(date) => setEndDate(date)} className="datepicker"/>
+                                </FormButton>
+                            </FormInput>
                         </Form.Group>
 
                         <Form.Group controlId="ControlInput2">
                             <Form.Label>휴가 일수</Form.Label>
-                            <Form.Control
-                                type="text"
-                                placeholder="일수"
-                                value={countDate}
-                                disabled
-                            />
+                            <Form.Control type="text" placeholder="일수" value={countDate} disabled/>
                         </Form.Group>
-
-                        {/* <Form.Group controlId="exampleForm.ControlInput1">
-                        <Form.Label>포함 공휴일</Form.Label>
-                        <Form.Control type="text" placeholder="공휴일" disabled/>
-                    </Form.Group> */}
 
                         <Form.Group controlId="exampleForm.ControlTextarea1">
                             <Form.Label>휴가 사유</Form.Label>
-                            <Form.Control
-                                as="textarea"
-                                rows={3}
-                                value={reason}
-                                onChange={(e) => setReason(e.target.value)}
-                            />
+                            <Form.Control as="textarea" rows={3} value={reason} onChange={(e) => setReason(e.target.value)}/>
                         </Form.Group>
                     </Form>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="secondary" onClick={handleClose}>
-                        취소
-                    </Button>
-                    <Button
-                        type="submit"
-                        variant="primary"
-                        onClick={handleClose}
-                    >
-                        신청
-                    </Button>
+                    <Button variant="secondary" onClick={handleClose}>취소</Button>
+                    <Button type="submit" variant="primary" onClick={handleClose}>신청</Button>
                 </Modal.Footer>
             </Modal>
 
-            <Dialog
-                title="휴가 등록"
-                confirmText="등록"
-                cancelText="취소"
-                onConfirm={onConfirm}
-                onCancel={onCancel}
-                visible={dialog}
-            >
+            <Dialog title="휴가 등록" confirmText="등록" cancelText="취소"
+            onConfirm={onConfirm} onCancel={onCancel} visible={dialog}>
                 휴가 등록 하시겠습니까?
             </Dialog>
         </Container>
