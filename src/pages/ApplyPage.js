@@ -33,9 +33,10 @@ const FormButton = styled.div`
 `;
 
 const ApplyPage = () => {
+    const [id, setId] = useState(null);
+    const [check, setCheck] = useState('I');
     const [show, setShow] = useState(false);
     const [code, setCode] = useState('VK1');
-    const [check, setCheck] = useState(false);
     const [reason, setReason] = useState('');
     const [startDate, setStartDate] = useState(new Date());
     const [endDate, setEndDate] = useState(new Date());
@@ -66,41 +67,128 @@ const ApplyPage = () => {
 
     //휴가 등록 모달창 close
     const handleClose = () => {
-        let json = {
-            reg_start_date: getFormatDate(startDate),
-            reg_end_date: getFormatDate(endDate),
-            va_days_num: countDate,
-            vk_code: code,
-            va_reason: reason,
-        };
-
-        console.log(json);
-        console.log(empInfo);
+        clean();
+        setCheck('I');
         setShow(false);
     };
     //휴가 등록 모달창 open
+    const handleShowModal = () => {
+        clean();
+        setShow(true);
+    }
+
+    const clean = () => {
+        setCode('VK1')
+        setReason('');
+        setStartDate(new Date());
+        setEndDate(new Date());        
+        // calDate();
+    }
+
+    //휴가 수정 모달창 open
     const handleShow = (id) => {
-        console.log(id);
-        
-        let n = empReg.filter(reg => reg.id === id);
-        setCode(n[0].vkCode); 
-        
+        setCheck('U');
+
+        let n = empReg.filter(reg => reg.id === id);        
+        setId(id);            
+        setCode(n[0].vkCode);    
+        setReason(n[0].regReason);
+        setStartDate(parse(n[0].regStartDate));
+        setEndDate(parse(n[0].regEndDate));    
 
         setShow(true);
     }
 
+    //휴가 신규 등록
     const doApply = (e) => {
         e.preventDefault(); // submit이 action을 안타고 자기 할일을 그만함.
 
-        let json = {
-            va_start_date: startDate,
-            va_end_date: endDate,
-            va_days_num: countDate,
-            vk_code: code,
-            va_reason: reason,
-        };
+        var token = 'Bearer ' + window.sessionStorage.getItem('Authorization');   
 
-        console.log(json);
+        let json = {
+            regStartDate: startDate,
+            regEndDate: endDate,
+            regNum: countDate,
+            regReason: reason,
+            code: code,
+            empCode: empInfo[0].empCode
+        };        
+        console.log(json);        
+
+        fetch('/vacation/doApply', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json; charset=utf-8',
+                Authorization: token,
+            },
+            body: JSON.stringify(json),
+        })
+        .then((res) => {
+            if (res.status === 200) {
+                return res.json();
+            } else {
+                window.alert('서버 오류입니다. 관리자에게 문의 바랍니다.');
+            }
+        })
+        .then((res) => {
+            if(res.id > 0){
+                alert('휴가 신청 되었습니다.');                
+                setShow(false);
+                getUserInfo();
+            }
+                                      
+        })
+        .catch((error) => {
+            console.error(error);
+        });
+
+        if (countDate < 0.5) {
+            window.alert('시작날짜가 종료일자보다 미래일 수 없습니다.');
+            return;
+        }
+    };
+
+    //휴가 수정
+    const doUpdate = (e) => {
+        e.preventDefault(); // submit이 action을 안타고 자기 할일을 그만함.
+
+        var token = 'Bearer ' + window.sessionStorage.getItem('Authorization');   
+
+        let json = {
+            regStartDate: startDate,
+            regEndDate: endDate,
+            regNum: countDate,
+            regReason: reason,
+            code: code,
+            empCode: empInfo[0].empCode
+        };        
+        console.log(json);        
+
+        fetch(`/vacation/doUpdate/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json; charset=utf-8',
+                Authorization: token,
+            },
+            body: JSON.stringify(json),
+        })
+        .then((res) => {
+            if (res.status === 200) {
+                return res.json();
+            } else {
+                window.alert('서버 오류입니다. 관리자에게 문의 바랍니다.');
+            }
+        })
+        .then((res) => {
+            if(res.id > 0){
+                alert('휴가 수정 되었습니다.');                
+                setShow(false);
+                getUserInfo();
+            }                                      
+        })
+        .catch((error) => {
+            console.error(error);
+        });
 
         if (countDate < 0.5) {
             window.alert('시작날짜가 종료일자보다 미래일 수 없습니다.');
@@ -109,7 +197,18 @@ const ApplyPage = () => {
     };
 
     /**
-     *  yyyyMMdd 포맷으로 반환
+     *  date 형으로 변환
+     */
+     const parse = (str) => {
+        var date = str.split('-');
+        var y = date[0];
+        var m = date[1];
+        var d = date[2];
+        return new Date(y,m-1,d);
+    }   
+
+    /**
+     *  yyyy-MM-dd 포맷으로 반환
      */
     const getFormatDate = (date) => {
         var year = date.getFullYear(); //yyyy
@@ -117,7 +216,7 @@ const ApplyPage = () => {
         month = month >= 10 ? month : '0' + month; //month 두자리로 저장
         var day = date.getDate(); //d
         day = day >= 10 ? day : '0' + day; //day 두자리로 저장
-        return year + '' + month + '' + day; //'-' 추가하여 yyyy-mm-dd 형태 생성 가능
+        return year + '-' + month + '-' + day; //'-' 추가하여 yyyy-mm-dd 형태 생성 가능
     };
 
     const getUserInfo = () => {
@@ -186,10 +285,12 @@ const ApplyPage = () => {
     };
 
     const calDate = () => {
+        //휴가 Time으로 미리 계산(만의 자리 내림으로 버그 해결)
+        var time = Math.round((endDate.getTime() - startDate.getTime())/10000)*10000;
+
         //휴가일수 계산
-        var dateDiff = Math.ceil(
-            (endDate.getTime() - startDate.getTime()) / (1000 * 3600 * 24) + 1,
-        );
+        var dateDiff = Math.ceil(time / (1000 * 3600 * 24) + 1);
+
         // 사이에 낀 토,일 제외하기 위한 로직
         var weeks = Math.floor(dateDiff / 7);
         dateDiff = dateDiff - weeks * 2;
@@ -341,7 +442,7 @@ const ApplyPage = () => {
                 </Table>
 
                 <div style={{ textAlign: 'end' }}>
-                    <Button color="black" outline onClick={handleShow}>신규 신청</Button>
+                    <Button color="black" outline onClick={handleShowModal}>신규 신청</Button>
                 </div>
             </Block>
             <Block>
@@ -369,7 +470,6 @@ const ApplyPage = () => {
                     <tbody>
                         {empReg.map((data) => (
                             <tr key={data.id}>
-                                <td style={{ display: 'none' }}>{data.id}</td>
                                 <td>
                                     <Form.Check type={'checkbox'} onChange={(e) =>
                                             checkHandler(e.target.checked, data.id)
@@ -437,7 +537,12 @@ const ApplyPage = () => {
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={handleClose}>취소</Button>
-                    <Button type="submit" variant="primary" onClick={handleClose}>신청</Button>
+                    {
+                        check == 'I' 
+                        ? <Button type="submit" variant="primary" onClick={doApply}>신청</Button> 
+                        : <Button type="submit" variant="primary" onClick={doUpdate}>수정</Button>
+                    }
+                    
                 </Modal.Footer>
             </Modal>
 
