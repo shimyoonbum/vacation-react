@@ -2,7 +2,9 @@ import React, {useState, useEffect} from 'react';
 import Header from '../components/Header';
 import styled from 'styled-components';
 import { createGlobalStyle } from 'styled-components';
-import { Table, Button, Modal, Container } from 'react-bootstrap';
+import { Table, Modal, Container } from 'react-bootstrap';
+import Button from '../components/Button';
+import Dialog from '../components/Dialog';
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -21,60 +23,40 @@ const Block = styled.div`
 
 const ManagePage = () => {
     const [show, setShow] = useState(false);
-    const [empInfo, setEmpInfo] = useState({
-        empName: '',
-        empCode: '',
-        empRank: '',
-        orgName: '',
-        codeName: '',
-        joinDate: '',
-        phone: '',
-        email: '',
-        acqDaysNum: '',
-        useDaysNum: '',
-        resDaysNum: '',
-    });
+    const [teamInfo, setTeamInfo] = useState({});
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
 
-    const getUserInfo = () =>{
+    const getManage = () =>{
         var token = 'Bearer ' + window.sessionStorage.getItem('Authorization');
     
-        fetch('/api/user', {
+        fetch('/manage/getMember', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json; charset=utf-8',
                 'Authorization' : token
             }        
         })
-            .then((res) => {
-                if (res.status === 200) {
-                    return res.json();
-                } else {
-                    window.alert('서버 오류입니다. 관리자에게 문의 바랍니다.');
-                }
-            })
-            .then((res) => {    
-                setEmpInfo({
-                    empName: res.employee.empName,
-                    empCode: res.employee.empCode,
-                    empRank: res.employee.empRank,
-                    orgName: res.employee.organization.orgName,
-                    codeName: res.employee.organization.code.codeName,
-                    joinDate: res.employee.joinDate,
-                    phone: res.employee.phone,
-                    email: res.username,
-                    acqDaysNum: res.employee.vacation.acqDaysNum,
-                    useDaysNum: res.employee.vacation.useDaysNum,
-                    resDaysNum: res.employee.vacation.resDaysNum
-                });                
-            })
-            .catch((error) => {
-                console.error(error);
-            });
+        .then((res) => {
+            if (res.status === 200) {
+                return res.json();
+            } else {
+                window.alert('서버 오류입니다. 관리자에게 문의 바랍니다.');
+            }
+        })
+        .then((res) => {    
+            setTeamInfo(res);    
+        })
+        .catch((error) => {
+            console.error(error);
+        });
+    }
+
+    const check = () => {
+        console.log(teamInfo);
     }
     useEffect(() => {
-        getUserInfo();
+        getManage();
         return () => {};
     }, []);
 
@@ -93,11 +75,9 @@ const ManagePage = () => {
                             <th>이름</th>
                             <th>부서</th>
                             <th>직급</th>
-                            <th>입사 일자</th>
                             <th>발생 일수</th>
                             <th>사용 일수</th>
                             <th>잔여 일수</th>
-                            <th>상위자</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -105,12 +85,10 @@ const ManagePage = () => {
                             <td>1</td>
                             <td>Mark</td>
                             <td>Otto</td>
-                            <td>mdo</td>
                             <td>qqe</td>
                             <td>15.0</td>
                             <td>qqe</td>
                             <td>15.0</td>
-                            <td>ㄴㅇㅎ</td>
                         </tr>
                     </tbody>
                 </Table>
@@ -163,28 +141,11 @@ const ManagePage = () => {
                             <td>mdo</td>
                             <td>qqe</td>
                             <td>15.0</td>
-                            <td></td>
+                            <td><Button color="red" outline onClick={check}>반려</Button></td>
                         </tr>
                     </tbody>
                 </Table>
             </Block>
-
-            <Modal show={show} onHide={handleClose}>
-                <Modal.Header closeButton>
-                    <Modal.Title>휴가 신규 신청</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    Woohoo, you're reading this text in a modal!
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={handleClose}>
-                        Close
-                    </Button>
-                    <Button variant="primary" onClick={handleClose}>
-                        Save Changes
-                    </Button>
-                </Modal.Footer>
-            </Modal>
         </Container>
     );
 };

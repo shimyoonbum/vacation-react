@@ -29,9 +29,6 @@ function Header() {
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse id="basic-navbar-nav">
                     <Nav className="mr-auto">
-                        <Nav.Link href="/main" className="link">
-                            홈
-                        </Nav.Link>
                         <Nav.Link href="/apply" className="link">
                             휴가 등록
                         </Nav.Link>

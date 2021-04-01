@@ -7,7 +7,6 @@ import { BsCalendar, BsEnvelope } from 'react-icons/bs';
 import { FaUmbrellaBeach, FaPlane, FaRegCalendarCheck } from 'react-icons/fa';
 import { Accordion, Card, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import Button from '../components/Button';
-import { setHue } from 'polished';
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -45,24 +44,24 @@ const Counter = styled.div`
     border-radius: 5px;
 `;
 
-const MainPage = () => {
-    const [empInfo, setEmpInfo] = useState({
-        empName: '',
-        empCode: '',
-        empRank: '',
-        orgName: '',
-        codeName: '',
-        joinDate: '',
-        phone: '',
-        email: '',
-        acqDaysNum: '',
-        useDaysNum: '',
-        resDaysNum: '',
-    });
+const Blank = styled.div`
+    flex: 1;
+`;
 
-    const get = () => {
-        console.log(empInfo);
-    }
+const Profile = styled.div`
+    flex: 1;
+    text-align: center;
+    font-size: 25px;
+`;
+
+const ProfileButton = styled.div`
+    flex: 1;
+    text-align: end;
+    width: 100px;    
+`;
+
+const MainPage = () => {
+    const [empInfo, setEmpInfo] = useState({});
 
     const getUserInfo = () =>{
         var token = 'Bearer ' + window.sessionStorage.getItem('Authorization');
@@ -74,50 +73,38 @@ const MainPage = () => {
                 'Authorization' : token
             }        
         })
-            .then((res) => {
-                if (res.status === 200) {
-                    return res.json();
-                } else {
-                    window.alert('서버 오류입니다. 관리자에게 문의 바랍니다.');
-                }
-            })
-            .then((res) => {
-                // console.log('권한 : '+res.authorities[0]);
-                // console.log('사원코드 : '+res.employee.empCode);
-                // console.log('이름 : '+res.employee.empName);
-                // console.log('직위 : '+res.employee.empRank);
-                // console.log('조직이름 : '+res.employee.organization.orgName);
-                // console.log('조직구분 : '+res.employee.organization.code.codeName);
-                // console.log(res.employee.vacation.acqDaysNum);
-                // console.log(res.employee.vacation.useDaysNum);
-                // console.log(res.employee.vacation.resDaysNum);
-                // console.log('phone : '+res.employee.phone);
-                // console.log('email : '+res.username);
-                // console.log('입사일 : '+res.employee.joinDate);
-    
-                setEmpInfo({
-                    empName: res.employee.empName,
-                    empCode: res.employee.empCode,
-                    empRank: res.employee.empRank,
-                    orgName: res.employee.organization.orgName,
-                    codeName: res.employee.organization.code.codeName,
-                    joinDate: res.employee.joinDate,
-                    phone: res.employee.phone,
-                    email: res.username,
-                    acqDaysNum: res.employee.vacation.acqDaysNum,
-                    useDaysNum: res.employee.vacation.useDaysNum,
-                    resDaysNum: res.employee.vacation.resDaysNum
-                });                
-            })
-            .catch((error) => {
-                console.error(error);
-            });
+        .then((res) => {
+            if (res.status === 200) {
+                return res.json();
+            } else {
+                window.alert('서버 오류입니다. 관리자에게 문의 바랍니다.');
+            }
+        })
+        .then((res) => {    
+            setEmpInfo({
+                empName: res.employee.empName,
+                empCode: res.employee.empCode,
+                empRank: res.employee.empRank,
+                orgName: res.employee.organization.orgName,
+                codeName: res.employee.organization.code.codeName,
+                joinDate: res.employee.joinDate,
+                phone: res.employee.phone,
+                email: res.username,
+                acqDaysNum: res.employee.vacation.acqDaysNum,
+                useDaysNum: res.employee.vacation.useDaysNum,
+                resDaysNum: res.employee.vacation.resDaysNum
+            });                
+        })
+        .catch((error) => {
+            console.error(error);
+        });
     }
 
     useEffect(() => {
         getUserInfo();
         return () => {};
     }, []);
+
     return (
         <>
             <GlobalStyle />
@@ -125,60 +112,21 @@ const MainPage = () => {
             <div className="container">
                 <h2>USERINFO</h2>
                 <hr />
-
                 <HelloTitle>
-                    <p>
-                        <strong>심윤범</strong> 님 환영합니다!
-                    </p>
+                    <p><strong>{empInfo.empName}</strong> 님 환영합니다!</p>
                 </HelloTitle>
 
                 <Accordion>
                     <Card>
-                        <Card.Header
-                            style={{
-                                background: 'lightgoldenrodyellow',
-                                cursor: 'pointer',
-                            }}
-                        >
-                            <OverlayTrigger
-                                overlay={
-                                    <Tooltip>
-                                        클릭하여 프로필 정보 확인!
-                                    </Tooltip>
-                                }
-                            >
-                                <Accordion.Toggle
-                                    as={Card.Header}
-                                    variant="link"
-                                    eventKey="0"
-                                >
-                                    <div
-                                        style={{
-                                            display: 'flex',
-                                            margin: '10px auto',
-                                        }}
-                                    >
-                                        <div style={{ flex: 1 }}></div>
-                                        <div
-                                            style={{
-                                                flex: 1,
-                                                textAlign: 'center',
-                                                fontSize: '25px',
-                                            }}
-                                        >
-                                            사원코드 : <strong>E00001</strong>
-                                        </div>
-                                        <div
-                                            style={{
-                                                flex: 1,
-                                                textAlign: 'end',
-                                                width: '100px',
-                                            }}
-                                        >
-                                            <Button color="black" onClick={get} outline>
-                                                Profile
-                                            </Button>
-                                        </div>
+                        <Card.Header>
+                            <OverlayTrigger overlay={<Tooltip>클릭하여 프로필 정보 확인!</Tooltip>}>
+                                <Accordion.Toggle as={Card.Header} variant="link" eventKey="0">
+                                    <div style={{ display: 'flex'}}>
+                                        <Blank/>
+                                        <Profile>사원코드 : <strong>{empInfo.empCode}</strong></Profile>
+                                        <ProfileButton>
+                                            <Button color="black" outline>Profile</Button>
+                                        </ProfileButton>
                                     </div>
                                 </Accordion.Toggle>
                             </OverlayTrigger>
@@ -187,28 +135,22 @@ const MainPage = () => {
                             <Card.Body>
                                 <Notice>
                                     <NoticeBlock>
-                                        <BiBuilding />
-                                        &nbsp;직위 :
+                                        <BiBuilding />&nbsp;직위 : {empInfo.empRank}
                                     </NoticeBlock>
                                     <NoticeBlock>
-                                        <BiSitemap />
-                                        &nbsp;조직 이름 :
+                                        <BiSitemap />&nbsp;조직 이름 : {empInfo.orgName}
                                     </NoticeBlock>
                                     <NoticeBlock>
-                                        <BiUser />
-                                        &nbsp;조직 구분 :
+                                        <BiUser />&nbsp;조직 구분 : {empInfo.codeName}
                                     </NoticeBlock>                                   
                                     <NoticeBlock>
-                                        <BsCalendar />
-                                        &nbsp;입사일 :
+                                        <BsCalendar />&nbsp;입사일 : {empInfo.joinDate}
                                     </NoticeBlock>
                                     <NoticeBlock>
-                                        <BiPhoneCall />
-                                        &nbsp;Phone :
+                                        <BiPhoneCall />&nbsp;Phone : {empInfo.phone}
                                     </NoticeBlock>
                                     <NoticeBlock>
-                                        <BsEnvelope />
-                                        &nbsp;Email :
+                                        <BsEnvelope />&nbsp;Email : {empInfo.email}
                                     </NoticeBlock>
                                 </Notice>
                             </Card.Body>
@@ -216,7 +158,7 @@ const MainPage = () => {
                     </Card>
                 </Accordion>
 
-                <div className="row" style={{ marginTop: '30px' }}>
+                <div className="row">
                     <br />
                     <div className="col text-center">
                         <h2>개인 휴가 정보</h2>
@@ -226,22 +168,22 @@ const MainPage = () => {
                 <div className="row text-center">
                     <div className="col">
                         <Counter>
-                            <FaUmbrellaBeach style={{ fontSize: '30px', color: 'aqua' }}/>
-                            <h2>15</h2>
+                            <FaUmbrellaBeach className="icon"/>
+                            <h2>{empInfo.acqDaysNum}</h2>
                             <CountText>휴가 발생일 수</CountText>
                         </Counter>
                     </div>
                     <div className="col">
                         <Counter>
-                            <FaPlane style={{ fontSize: '30px', color: 'aqua' }}/>
-                            <h2>1</h2>
+                            <FaPlane className="icon"/>
+                            <h2>{empInfo.useDaysNum}</h2>
                             <CountText>휴가 사용일 수</CountText>
                         </Counter>
                     </div>
                     <div className="col">
                         <Counter>
-                            <FaRegCalendarCheck style={{ fontSize: '30px', color: 'aqua' }}/>
-                            <h2>14</h2>
+                            <FaRegCalendarCheck className="icon"/>
+                            <h2>{empInfo.resDaysNum}</h2>
                             <CountText>휴가 잔여일 수</CountText>
                         </Counter>
                     </div>

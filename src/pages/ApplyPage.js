@@ -67,22 +67,20 @@ const ApplyPage = () => {
 
     //휴가 등록 모달창 close
     const handleClose = () => {
-        clean();
-        setCheck('I');
-        setShow(false);
+        clean(false);
     };
     //휴가 등록 모달창 open
     const handleShowModal = () => {
-        clean();
-        setShow(true);
+        clean(true);
     }
-
-    const clean = () => {
-        setCode('VK1')
+    //휴가 모달창 초기화 메소드.
+    const clean = (show) => {
+        setShow(show);
+        setCode('VK1');
+        setCheck('I');
         setReason('');
         setStartDate(new Date());
-        setEndDate(new Date());        
-        // calDate();
+        setEndDate(new Date()); 
     }
 
     //휴가 수정 모달창 open
@@ -162,6 +160,8 @@ const ApplyPage = () => {
             code: code,
             empCode: empInfo[0].empCode
         };        
+        console.log(startDate);   
+        console.log(endDate);   
         console.log(json);        
 
         fetch(`/vacation/doUpdate/${id}`, {
@@ -180,11 +180,13 @@ const ApplyPage = () => {
             }
         })
         .then((res) => {
-            if(res.id > 0){
-                alert('휴가 수정 되었습니다.');                
-                setShow(false);
+            if(res.result > 0){
+                alert('휴가 수정 되었습니다.'); 
+                setShow(false);                   
                 getUserInfo();
-            }                                      
+            }else{
+                alert('수정 실패하였습니다..'); 
+            }                           
         })
         .catch((error) => {
             console.error(error);
