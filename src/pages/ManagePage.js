@@ -46,7 +46,8 @@ const ManagePage = () => {
             }
         })
         .then((res) => {
-            let manage = res.filter(reg => reg.empCode !== 'E0011');
+            // let manage = res.filter(reg => reg.empCode !== 'E0011');
+            let manage = res.slice(1, res.length);  //기존 배열 유지하고 첫번째요소만 삭제
             let list = [];
 
             manage.map(data => {
@@ -65,9 +66,49 @@ const ManagePage = () => {
         });
     }
 
-    const check = () => {
-        console.log(vacation);
+    const approve = (id) => {
+        let apr = {
+            vsCode : 'VS2'
+        }
+
+        doUpdate(id, apr);
     }
+
+    const reject = (id) => {
+        let apr = {
+            rejectReason : '응 안되',
+            vsCode : 'VS3'
+        }
+
+        doUpdate(id, apr);
+    }
+
+    const doUpdate = (id, apr) =>{
+        var token = 'Bearer ' + window.sessionStorage.getItem('Authorization');
+    
+        fetch(`/manage/doUpdate/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json; charset=utf-8',
+                'Authorization' : token
+            },
+            body: JSON.stringify(apr)   
+        })
+        .then((res) => {
+            if (res.status === 200) {
+                return res.json();
+            } else {
+                window.alert('서버 오류입니다. 관리자에게 문의 바랍니다.');
+            }
+        })
+        .then((res) => {
+            console.log(res);
+        })
+        .catch((error) => {
+            console.error(error);
+        });
+    }
+    
     useEffect(() => {
         getManage();
         return () => {};
@@ -79,7 +120,7 @@ const ManagePage = () => {
             <Header />
             <Block>
                 <h3>팀원(승인 요청자) 정보</h3>
-                <hr />
+                <hr/>
 
                 <Table striped bordered hover style={{ textAlign: 'center' }}>
                     <thead>
@@ -137,7 +178,10 @@ const ManagePage = () => {
                             <td>{data.regNum}</td>
                             <td>{data.regReason}</td>
                             <td>{data.vkCode.codeName}</td>
-                            <td><Button color="blue" outline onClick={check}>승인</Button><Button color="red" outline onClick={check}>반려</Button></td>
+                            <td>
+                                <Button color="blue" outline onClick={()=>approve(data.id)}>승인</Button>
+                                <Button color="red" outline onClick={()=>reject(data.id)}>반려</Button>
+                            </td>
                         </tr>
                     ))}
                     </tbody>

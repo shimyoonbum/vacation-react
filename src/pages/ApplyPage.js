@@ -248,6 +248,8 @@ const ApplyPage = () => {
             .then((res) => {
                 var emp = res.employee.register;
 
+                console.log(res.employee);
+
                 for (let i = 0; i < emp.length; i++) {
                     emp[i].vkCodeName = emp[i].vkCode.codeName;         //휴가 이름              
                     emp[i].vkCodeValue = emp[i].vkCode.codeValue;       //휴가 값(0.5 혹은 1)             
@@ -273,7 +275,7 @@ const ApplyPage = () => {
                         empCode: res.employee.empCode,
                         empRank: res.employee.empRank,
                         orgName: res.employee.organization.orgName,
-                        empUpper: res.employee.empUpper,
+                        empUpper: res.employee.empUpper.empName,
                         joinDate: res.employee.joinDate,
                         resDaysNum: res.employee.vacation.resDaysNum,
                     },
