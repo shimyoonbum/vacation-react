@@ -23,7 +23,8 @@ const Block = styled.div`
 
 const ManagePage = () => {
     const [show, setShow] = useState(false);
-    const [teamInfo, setTeamInfo] = useState({});
+    const [teamInfo, setTeamInfo] = useState([]);
+    const [vacation, setVacation] = useState([]);
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
 
@@ -44,7 +45,19 @@ const ManagePage = () => {
                 window.alert('서버 오류입니다. 관리자에게 문의 바랍니다.');
             }
         })
-        .then((res) => {    
+        .then((res) => {
+            let manage = res.filter(reg => reg.empCode !== 'E0011');
+            let list = [];
+
+            manage.map(data => {
+                let vac = data.register;
+                vac.map(c => {
+                    delete data.register 
+                    list = [...list, Object.assign(c, data)];
+                })                               
+            })            
+
+            setVacation(list.filter(l => l.vsCode === 'VS1'));
             setTeamInfo(res);    
         })
         .catch((error) => {
@@ -53,7 +66,7 @@ const ManagePage = () => {
     }
 
     const check = () => {
-        console.log(teamInfo);
+        console.log(vacation);
     }
     useEffect(() => {
         getManage();
@@ -61,11 +74,11 @@ const ManagePage = () => {
     }, []);
 
     return (
-        <Container>
+        <>
             <GlobalStyle />
             <Header />
             <Block>
-                <h3>팀원 정보</h3>
+                <h3>팀원(승인 요청자) 정보</h3>
                 <hr />
 
                 <Table striped bordered hover style={{ textAlign: 'center' }}>
@@ -81,15 +94,17 @@ const ManagePage = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>1</td>
-                            <td>Mark</td>
-                            <td>Otto</td>
-                            <td>qqe</td>
-                            <td>15.0</td>
-                            <td>qqe</td>
-                            <td>15.0</td>
+                    {teamInfo.map((data, index) => (
+                        <tr key={index}>
+                            <td>{index+1}</td>
+                            <td>{data.empName}</td>
+                            <td>{data.organization.orgName}</td>
+                            <td>{data.empRank}</td>
+                            <td>{data.vacation.acqDaysNum}</td>
+                            <td>{data.vacation.resDaysNum}</td>
+                            <td>{data.vacation.useDaysNum}</td>
                         </tr>
+                    ))}
                     </tbody>
                 </Table>
             </Block>
@@ -101,52 +116,34 @@ const ManagePage = () => {
                     <thead>
                         <tr>
                             <th>#</th>
-                            <th>휴가신청일</th>
+                            <th>휴가신청일시</th>
                             <th>이름</th>
-                            <th>부서</th>
-                            <th>직급</th>
-                            <th>입사 일자</th>
                             <th>휴가기간</th>
+                            <th>휴가일수</th>
                             <th>휴가사유</th>
                             <th>유형</th>
-                            <th>상태</th>
-                            <th>반려 사유</th>
-                            <th> </th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>1</td>
-                            <td>Mark</td>
-                            <td>Otto</td>
-                            <td>mdo</td>
-                            <td>qqe</td>
-                            <td>15.0</td>
-                            <td>1</td>
-                            <td>Mark</td>
-                            <td>Otto</td>
-                            <td>qqe</td>
-                            <td>15.0</td>
-                            <td></td>
+                    {vacation.map((data, index) => (
+                        <tr key={index}>
+                            <td>{index+1}</td>
+                            <td>{data.regDate}</td>
+                            <td>{data.empName}</td>
+                            {/* <td>{data.organization.orgName}</td>
+                            <td>{data.empRank}</td> */}
+                            <td>{data.regStartDate} ~ {data.regEndDate}</td>
+                            <td>{data.regNum}</td>
+                            <td>{data.regReason}</td>
+                            <td>{data.vkCode.codeName}</td>
+                            <td><Button color="blue" outline onClick={check}>승인</Button><Button color="red" outline onClick={check}>반려</Button></td>
                         </tr>
-                        <tr>
-                            <td>1</td>
-                            <td>Mark</td>
-                            <td>Otto</td>
-                            <td>mdo</td>
-                            <td>qqe</td>
-                            <td>15.0</td>
-                            <td>1</td>
-                            <td>Mark</td>
-                            <td>mdo</td>
-                            <td>qqe</td>
-                            <td>15.0</td>
-                            <td><Button color="red" outline onClick={check}>반려</Button></td>
-                        </tr>
+                    ))}
                     </tbody>
                 </Table>
             </Block>
-        </Container>
+        </>
     );
 };
 export default ManagePage;
