@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react';
 import Header from '../components/Header';
 import styled from 'styled-components';
 import { createGlobalStyle } from 'styled-components';
-import { Table, Modal, Container } from 'react-bootstrap';
+import { Table, InputGroup, FormControl } from 'react-bootstrap';
 import Button from '../components/Button';
 import Dialog from '../components/Dialog';
 
@@ -22,11 +22,16 @@ const Block = styled.div`
 `;
 
 const ManagePage = () => {
-    const [show, setShow] = useState(false);
     const [teamInfo, setTeamInfo] = useState([]);
     const [vacation, setVacation] = useState([]);
-    const handleClose = () => setShow(false);
-    const handleShow = () => setShow(true);
+
+    const [dialog, setDialog] = useState(false);
+    const [id, setId] = useState('');
+    const [reason, setReason] = useState('');
+
+    const changeValue = (e) => {
+        setReason(e.target.value);
+    };
 
     const getManage = () =>{
         var token = 'Bearer ' + window.sessionStorage.getItem('Authorization');
@@ -46,6 +51,7 @@ const ManagePage = () => {
             }
         })
         .then((res) => {
+            console.log(res);
             // let manage = res.filter(reg => reg.empCode !== 'E0011');
             let manage = res.slice(1, res.length);  //기존 배열 유지하고 첫번째요소만 삭제
             let list = [];
@@ -66,17 +72,40 @@ const ManagePage = () => {
         });
     }
 
-    const approve = (id) => {
+    //Dialog 오픈
+    const onDialog = (id) => {
+        setId(id);
+        setDialog(true);
+    };
+
+    //Dialog 반려 클릭
+    const onConfirm = () => {
+        setDialog(false);
+        reject();
+    };
+
+    //Dialog 취소 클릭
+    const onCancel = () => {
+        setDialog(false);
+        setId('');
+        setReason(''); 
+    };
+
+    const approve = (empCode, num, id) => {
         let apr = {
+            empCode : empCode,
+            regNum : num,
+            reason : '',
             vsCode : 'VS2'
         }
+        console.log(apr);
 
         doUpdate(id, apr);
     }
 
-    const reject = (id) => {
+    const reject = () => {
         let apr = {
-            rejectReason : '응 안되',
+            reason : reason,
             vsCode : 'VS3'
         }
 
@@ -102,7 +131,15 @@ const ManagePage = () => {
             }
         })
         .then((res) => {
-            console.log(res);
+            if(res.result > 0){
+                alert('휴가 처리 하였습니다.');
+                getManage();
+            }
+            else
+                alert('휴가 처리에 실패하였습니다..');
+
+            setId('');
+            setReason('');            
         })
         .catch((error) => {
             console.error(error);
@@ -142,8 +179,8 @@ const ManagePage = () => {
                             <td>{data.organization.orgName}</td>
                             <td>{data.empRank}</td>
                             <td>{data.vacation.acqDaysNum}</td>
-                            <td>{data.vacation.resDaysNum}</td>
                             <td>{data.vacation.useDaysNum}</td>
+                            <td>{data.vacation.resDaysNum}</td>
                         </tr>
                     ))}
                     </tbody>
@@ -167,10 +204,15 @@ const ManagePage = () => {
                         </tr>
                     </thead>
                     <tbody>
-                    {vacation.map((data, index) => (
+                    {
+                    vacation.length === 0
+                    ? <td colSpan = '8'>데이터 없음.</td>
+                    :
+                    vacation.map((data, index) => (
                         <tr key={index}>
                             <td>{index+1}</td>
                             <td>{data.regDate}</td>
+                            <td>{data.empCode}</td>
                             <td>{data.empName}</td>
                             {/* <td>{data.organization.orgName}</td>
                             <td>{data.empRank}</td> */}
@@ -179,14 +221,29 @@ const ManagePage = () => {
                             <td>{data.regReason}</td>
                             <td>{data.vkCode.codeName}</td>
                             <td>
-                                <Button color="blue" outline onClick={()=>approve(data.id)}>승인</Button>
-                                <Button color="red" outline onClick={()=>reject(data.id)}>반려</Button>
+                                <Button color="blue" outline onClick={()=>approve(data.empCode, data.regNum, data.id)}>승인</Button>
+                                <Button color="red" outline onClick={()=>onDialog(data.id)}>반려</Button>
                             </td>
                         </tr>
                     ))}
                     </tbody>
                 </Table>
             </Block>
+
+            <Dialog title="휴가 반려" confirmText="반려" cancelText="취소"
+            onConfirm={onConfirm} onCancel={onCancel} visible={dialog}>
+                <InputGroup size="sm" className="mb-3">
+                    <InputGroup.Prepend>
+                    <InputGroup.Text id="inputGroup-sizing-sm">사유</InputGroup.Text>
+                    </InputGroup.Prepend>
+                    <FormControl type="text"
+                        placeholder="거절 사유 입력"
+                        onChange={changeValue}
+                        name="author"
+                        value={reason}
+                        />
+                </InputGroup>
+            </Dialog>
         </>
     );
 };

@@ -92,21 +92,10 @@ const SignPage = () => {
         <SignBlock>
             <GlobalStyle />
             <div>
-                <h2
-                    style={{
-                        width: '80%',
-                        marginLeft: '10%',
-                        marginTop: '7%',
-                        textAlign: 'center',
-                    }}
-                >
+                <h2 style={{ width: '80%',marginLeft: '10%',marginTop: '7%',textAlign: 'center'}}>
                     메타넷 글로벌 휴가관리
                 </h2>
-                <h5
-                    style={{
-                        textAlign: 'center',
-                    }}
-                >
+                <h5 style={{textAlign: 'center'}}>
                     <Badge variant="info">Ver 1.0</Badge>
                 </h5>
             </div>
@@ -166,23 +155,10 @@ const SignPage = () => {
                     </Button>
                 </div>
             </Form>
-            <div
-                style={{
-                    textAlign: 'center',
-                    fontSize: '23px',
-                    margin: '3px',
-                }}
-            >
+            <div style={{textAlign: 'center',fontSize: '23px',margin: '3px'}}>
                 or
             </div>
-            <div
-                style={{
-                    width: '80%',
-                    marginLeft: '10%',
-                    marginTop: '1%',
-                    textAlign: 'center',
-                }}
-            >
+            <div style={{width: '80%', marginLeft: '10%', marginTop: '1%', textAlign: 'center'}}>
                 <Button type="submit" color="pink" outline halfWidth>
                     Forgot PassWord
                 </Button>

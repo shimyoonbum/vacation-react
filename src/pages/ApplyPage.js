@@ -38,11 +38,12 @@ const ApplyPage = () => {
     const [show, setShow] = useState(false);
     const [code, setCode] = useState('VK1');
     const [reason, setReason] = useState('');
+    const [date, setDate] = useState(new Date());
     const [startDate, setStartDate] = useState(new Date());
     const [endDate, setEndDate] = useState(new Date());
     const [countDate, setCountDate] = useState(new Date());
 
-    const [dialog, setDialog] = useState(false);
+    // const [dialog, setDialog] = useState(false);
 
     const [empInfo, setEmpInfo] = useState([]);
     const [empReg, setEmpReg] = useState([]);
@@ -50,20 +51,26 @@ const ApplyPage = () => {
     // checked 된 것들
     const [checkItems, setCheckItems] = useState([]);
 
-    //Dialog 오픈
-    const onDialog = () => {
-        setDialog(true);
-    };
+    // Dialog 오픈
+    // const onDialog = () => {
+    //     setDialog(true);
+    // };
 
-    //Dialog 확인 클릭
-    const onConfirm = () => {
-        setDialog(false);
-    };
+    // Dialog 확인 클릭
+    // const onConfirm = () => {
+    //     setDialog(false);
+    // };
 
-    //Dialog 취소 클릭
-    const onCancel = () => {
-        setDialog(false);
-    };    
+    // Dialog 취소 클릭
+    // const onCancel = () => {
+    //     setDialog(false);
+    // };    
+
+    const setHalfDate = (date) => {
+        console.log(date);
+        setCountDate(0.5);
+        setDate(date);
+    }
 
     //휴가 등록 모달창 close
     const handleClose = () => {
@@ -102,16 +109,33 @@ const ApplyPage = () => {
         e.preventDefault(); // submit이 action을 안타고 자기 할일을 그만함.
 
         var token = 'Bearer ' + window.sessionStorage.getItem('Authorization');   
+        let json = {};
 
-        let json = {
-            regStartDate: startDate,
-            regEndDate: endDate,
-            regNum: countDate,
-            regReason: reason,
-            code: code,
-            empCode: empInfo[0].empCode
-        };        
-        console.log(json);        
+        if(code === 'VK2'){
+            json = {
+                regStartDate: date,
+                regEndDate: date,
+                regNum: countDate,
+                regReason: reason,
+                code: code,
+                empCode: empInfo[0].empCode
+            }; 
+        }else{
+            json = {
+                regStartDate: startDate,
+                regEndDate: endDate,
+                regNum: countDate,
+                regReason: reason,
+                code: code,
+                empCode: empInfo[0].empCode
+            };  
+        }
+        console.log(json);
+
+        if (countDate < 0.5) {
+            window.alert('시작날짜가 종료일자보다 미래일 수 없습니다.');
+            return;
+        }     
 
         fetch('/vacation/doApply', {
             method: 'POST',
@@ -138,12 +162,7 @@ const ApplyPage = () => {
         })
         .catch((error) => {
             console.error(error);
-        });
-
-        if (countDate < 0.5) {
-            window.alert('시작날짜가 종료일자보다 미래일 수 없습니다.');
-            return;
-        }
+        });        
     };
 
     //휴가 수정
@@ -159,10 +178,7 @@ const ApplyPage = () => {
             regReason: reason,
             code: code,
             empCode: empInfo[0].empCode
-        };        
-        console.log(startDate);   
-        console.log(endDate);   
-        console.log(json);        
+        };            
 
         fetch(`/vacation/doUpdate/${id}`, {
             method: 'PUT',
@@ -289,26 +305,31 @@ const ApplyPage = () => {
     };
 
     const calDate = () => {
-        //휴가 Time으로 미리 계산(만의 자리 내림으로 버그 해결)
-        var time = Math.round((endDate.getTime() - startDate.getTime())/10000)*10000;
+        //반차는 0.5일로 무조건 계산한다.
+        if(code === 'VK2'){
+            setCountDate(0.5);
+        }else{
+            //휴가 Time으로 미리 계산(만의 자리 내림으로 버그 해결)
+            var time = Math.round((endDate.getTime() - startDate.getTime())/10000)*10000;
 
-        //휴가일수 계산
-        var dateDiff = Math.ceil(time / (1000 * 3600 * 24) + 1);
+            //휴가일수 계산
+            var dateDiff = Math.ceil(time / (1000 * 3600 * 24) + 1);
 
-        // 사이에 낀 토,일 제외하기 위한 로직
-        var weeks = Math.floor(dateDiff / 7);
-        dateDiff = dateDiff - weeks * 2;
-        //일요일 : 0, 토요일 : 6
-        var startDay = startDate.getDay();
-        var endDay = endDate.getDay();
-        // 지난 토, 일 제거(목 ~ 월 인 경우)
-        if (startDay - endDay > 1) dateDiff = dateDiff - 2;
-        // 시작일 제거
-        if (startDay === 0 && endDay !== 6) dateDiff = dateDiff - 1;
-        // 종료일 제거
-        if (endDay === 6 && startDay !== 0) dateDiff = dateDiff - 1;
-        //일자 state에 반영
-        setCountDate(parseInt(dateDiff));
+            // 사이에 낀 토,일 제외하기 위한 로직
+            var weeks = Math.floor(dateDiff / 7);
+            dateDiff = dateDiff - weeks * 2;
+            //일요일 : 0, 토요일 : 6
+            var startDay = startDate.getDay();
+            var endDay = endDate.getDay();
+            // 지난 토, 일 제거(목 ~ 월 인 경우)
+            if (startDay - endDay > 1) dateDiff = dateDiff - 2;
+            // 시작일 제거
+            if (startDay === 0 && endDay !== 6) dateDiff = dateDiff - 1;
+            // 종료일 제거
+            if (endDay === 6 && startDay !== 0) dateDiff = dateDiff - 1;
+            //일자 state에 반영
+            setCountDate(parseInt(dateDiff));
+        }        
     };
 
     // 개별선택
@@ -408,7 +429,7 @@ const ApplyPage = () => {
     useEffect(() => {
         calDate();
         return () => {};
-    }, [startDate, endDate, countDate]);
+    }, [code, date, startDate, endDate, countDate]);
 
     useEffect(() => {
         getUserInfo();
@@ -472,7 +493,11 @@ const ApplyPage = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {empReg.map((data) => (
+                        {
+                        empReg.length === 0
+                        ? <td colSpan = '5'>데이터 없음.</td>
+                        :
+                        empReg.map((data) => (
                             <tr key={data.id}>
                                 <td>
                                     <Form.Check type={'checkbox'} onChange={(e) =>
@@ -518,15 +543,27 @@ const ApplyPage = () => {
                             </Form.Control>
                         </Form.Group>
 
-                        <Form.Group controlId="ControlInput1">
-                            <Form.Label>휴가 기간</Form.Label>
-                            <FormInput>
-                                <FormButton>시작<DatePicker selected={startDate} onChange={(date) => setStartDate(date)} className="datepicker"/>
-                                </FormButton>
-                                <FormButton>종료<DatePicker selected={endDate} onChange={(date) => setEndDate(date)} className="datepicker"/>
-                                </FormButton>
-                            </FormInput>
-                        </Form.Group>
+                        {
+                            code === 'VK2' 
+                            ?
+                            <Form.Group controlId="ControlInput1">
+                                <Form.Label>휴가 기간</Form.Label>
+                                <FormInput>
+                                    <FormButton>일자<DatePicker selected={date} onChange={(d) => setHalfDate(d)} className="datepicker"/>
+                                    </FormButton>
+                                </FormInput>
+                            </Form.Group>
+                            :
+                            <Form.Group controlId="ControlInput1">
+                                <Form.Label>휴가 기간</Form.Label>
+                                <FormInput>
+                                    <FormButton>시작<DatePicker selected={startDate} onChange={(date) => setStartDate(date)} className="datepicker"/>
+                                    </FormButton>
+                                    <FormButton>종료<DatePicker selected={endDate} onChange={(date) => setEndDate(date)} className="datepicker"/>
+                                    </FormButton>
+                                </FormInput>
+                            </Form.Group>
+                        }                       
 
                         <Form.Group controlId="ControlInput2">
                             <Form.Label>휴가 일수</Form.Label>
@@ -542,7 +579,7 @@ const ApplyPage = () => {
                 <Modal.Footer>
                     <Button variant="secondary" onClick={handleClose}>취소</Button>
                     {
-                        check == 'I' 
+                        check === 'I' 
                         ? <Button type="submit" variant="primary" onClick={doApply}>신청</Button> 
                         : <Button type="submit" variant="primary" onClick={doUpdate}>수정</Button>
                     }
@@ -550,10 +587,10 @@ const ApplyPage = () => {
                 </Modal.Footer>
             </Modal>
 
-            <Dialog title="휴가 등록" confirmText="등록" cancelText="취소"
+            {/* <Dialog title="휴가 등록" confirmText="등록" cancelText="취소"
             onConfirm={onConfirm} onCancel={onCancel} visible={dialog}>
                 휴가 등록 하시겠습니까?
-            </Dialog>
+            </Dialog> */}
         </Container>
     );
 };
