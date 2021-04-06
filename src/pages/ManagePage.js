@@ -51,7 +51,6 @@ const ManagePage = () => {
             }
         })
         .then((res) => {
-            console.log(res);
             // let manage = res.filter(reg => reg.empCode !== 'E0011');
             let manage = res.slice(1, res.length);  //기존 배열 유지하고 첫번째요소만 삭제
             let list = [];
@@ -91,14 +90,25 @@ const ManagePage = () => {
         setReason(''); 
     };
 
-    const approve = (empCode, num, id) => {
-        let apr = {
-            empCode : empCode,
-            regNum : num,
-            reason : '',
-            vsCode : 'VS2'
+    const approve = (code, empCode, num, id) => {
+        let apr = {};
+
+        if(code === 'VK1'||code === 'VK2'){
+            apr = {
+                empCode : empCode,
+                regNum : num,
+                reason : '',
+                vsCode : 'VS2'
+            }
+        }else{
+            apr = {
+                empCode : empCode,
+                regNum : 0,
+                reason : '',
+                vsCode : 'VS2'
+            }
         }
-        console.log(apr);
+        // console.log(apr);
 
         doUpdate(id, apr);
     }
@@ -124,20 +134,24 @@ const ManagePage = () => {
             body: JSON.stringify(apr)   
         })
         .then((res) => {
+            console.log(res);
             if (res.status === 200) {
                 return res.json();
+            } else if(res.status === 400) {
+                alert('사용가능한 휴가 일수를 초과하였습니다.');
             } else {
-                window.alert('서버 오류입니다. 관리자에게 문의 바랍니다.');
+                alert('서버 오류입니다. 관리자에게 문의 바랍니다.');
             }
         })
         .then((res) => {
-            if(res.result > 0){
-                alert('휴가 처리 하였습니다.');
-                getManage();
-            }
-            else
-                alert('휴가 처리에 실패하였습니다..');
-
+            if(res !== undefined){
+                if(res.result > 0){
+                    alert('휴가 처리 하였습니다.');
+                    getManage();
+                }
+                else
+                    alert('휴가 처리에 실패하였습니다..');    
+            }            
             setId('');
             setReason('');            
         })
@@ -206,22 +220,19 @@ const ManagePage = () => {
                     <tbody>
                     {
                     vacation.length === 0
-                    ? <td colSpan = '8'>데이터 없음.</td>
+                    ? <tr><td colSpan = '8'>데이터 없음.</td></tr>
                     :
                     vacation.map((data, index) => (
                         <tr key={index}>
                             <td>{index+1}</td>
                             <td>{data.regDate}</td>
-                            <td>{data.empCode}</td>
                             <td>{data.empName}</td>
-                            {/* <td>{data.organization.orgName}</td>
-                            <td>{data.empRank}</td> */}
                             <td>{data.regStartDate} ~ {data.regEndDate}</td>
                             <td>{data.regNum}</td>
                             <td>{data.regReason}</td>
                             <td>{data.vkCode.codeName}</td>
                             <td>
-                                <Button color="blue" outline onClick={()=>approve(data.empCode, data.regNum, data.id)}>승인</Button>
+                                <Button color="blue" outline onClick={()=>approve(data.vkCode.code, data.empCode, data.regNum, data.id)}>승인</Button>
                                 <Button color="red" outline onClick={()=>onDialog(data.id)}>반려</Button>
                             </td>
                         </tr>

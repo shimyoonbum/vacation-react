@@ -125,7 +125,7 @@ function Dialog({
         <DarkBackground disappear={!visible}>
             <DialogBlock disappear={!visible}>
                 <h3>{title}</h3>
-                <p style={{paddingTop : '10px'}}>{children}</p>
+                <div style={{paddingTop : '10px'}}>{children}</div>
                 <ButtonGroup>
                     <Button color="gray" onClick={onCancel}>
                         {cancelText}

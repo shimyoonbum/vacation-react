@@ -10,6 +10,7 @@ const Button = ({
     fullWidth,
     halfWidth,
     onClick,
+    disabled
 }) => {
     return (
         <button
@@ -19,6 +20,7 @@ const Button = ({
                 halfWidth,
             })}
             onClick={onClick}
+            disabled={disabled}
         >
             {children}
         </button>

@@ -263,9 +263,6 @@ const ApplyPage = () => {
             })
             .then((res) => {
                 var emp = res.employee.register;
-
-                console.log(res.employee);
-
                 for (let i = 0; i < emp.length; i++) {
                     emp[i].vkCodeName = emp[i].vkCode.codeName;         //휴가 이름              
                     emp[i].vkCodeValue = emp[i].vkCode.codeValue;       //휴가 값(0.5 혹은 1)             
@@ -296,7 +293,7 @@ const ApplyPage = () => {
                         resDaysNum: res.employee.vacation.resDaysNum,
                     },
                 ]);
-
+                console.log(res.employee.register);
                 setEmpReg(res.employee.register);
             })
             .catch((error) => {
@@ -333,7 +330,10 @@ const ApplyPage = () => {
     };
 
     // 개별선택
-    function checkHandler(checked, id) {
+    function checkHandler(checked, id, code) {
+        if(code === 'VS2' || code === 'VS3')
+            return;
+
         if (checked) {
             setCheckItems([...checkItems, id]);
         } else {
@@ -346,7 +346,8 @@ const ApplyPage = () => {
     function checkAllHandler(checked) {
         if (checked) {
             const ids = [];
-            empReg.forEach((data) => ids.push(data.id));
+            const items = empReg.filter(data => data.vsCode === 'VS1');      
+            items.forEach((data) => ids.push(data.id));
             setCheckItems(ids);
         } else {
             setCheckItems([]);
@@ -495,24 +496,42 @@ const ApplyPage = () => {
                     <tbody>
                         {
                         empReg.length === 0
-                        ? <td colSpan = '5'>데이터 없음.</td>
+                        ? <tr><td colSpan = '5'>데이터 없음.</td></tr>
                         :
                         empReg.map((data) => (
                             <tr key={data.id}>
-                                <td>
-                                    <Form.Check type={'checkbox'} onChange={(e) =>
-                                            checkHandler(e.target.checked, data.id)
-                                        }
-                                        checked={checkItems.indexOf(data.id) >= 0 ? true : false}
-                                    ></Form.Check>
-                                </td>
+                                {
+                                    data.vsCode === 'VS1'
+                                    ?
+                                    <td>
+                                        <Form.Check type={'checkbox'} onChange={(e) =>
+                                                checkHandler(e.target.checked, data.id, data.vsCode)
+                                            }
+                                            checked={checkItems.indexOf(data.id) >= 0 ? true : false}
+                                        ></Form.Check>
+                                    </td>
+                                    :
+                                    <td>
+                                        <Form.Check type={'checkbox'} onChange={(e) =>
+                                                checkHandler(e.target.checked, data.id, data.vsCode)
+                                            }
+                                            checked={checkItems.indexOf(data.id) >= 0 ? true : false}
+                                            disabled
+                                        ></Form.Check>
+                                    </td>
+                                }
+                                
                                 <td>{data.vkCodeName}</td>
                                 <td>{data.regStartDate} ~ {data.regEndDate}</td>
                                 <td>{data.vsCodeName}</td>
-                                <td>
-                                    <Button color="blue" outline onClick={() =>handleShow(data.id)}>수정</Button>
-                                    <Button color="red" outline onClick={() => handleCheckedDelete(data.id)}>삭제</Button>
-                                </td>
+                                
+                                {
+                                    (data.vsCode === 'VS2' || data.vsCode === 'VS3')
+                                    ? <td><Button color="blue" outline disabled>수정불가</Button>
+                                    <Button color="red" outline disabled>삭제불가</Button></td>
+                                    : <td><Button color="blue" outline onClick={() =>handleShow(data.id)}>수정</Button>
+                                    <Button color="red" outline onClick={() => handleCheckedDelete(data.id)}>삭제</Button></td>
+                                }  
                             </tr>
                         ))}
                     </tbody>
