@@ -64,12 +64,20 @@ const ApplyPage = () => {
     // Dialog 취소 클릭
     // const onCancel = () => {
     //     setDialog(false);
-    // };    
+    // };   
 
+    //반차 날짜 설정
     const setHalfDate = (date) => {
-        console.log(date);
         setCountDate(0.5);
         setDate(date);
+    }
+    //연차 시작 날짜 설정
+    const setSDate = (date) => {
+        setStartDate(date)
+    }
+    //연차 종료 날짜 설정
+    const setEDate = (date) => {
+        setEndDate(date);
     }
 
     //휴가 등록 모달창 close
@@ -170,15 +178,27 @@ const ApplyPage = () => {
         e.preventDefault(); // submit이 action을 안타고 자기 할일을 그만함.
 
         var token = 'Bearer ' + window.sessionStorage.getItem('Authorization');   
+        let json = {};
 
-        let json = {
-            regStartDate: startDate,
-            regEndDate: endDate,
-            regNum: countDate,
-            regReason: reason,
-            code: code,
-            empCode: empInfo[0].empCode
-        };            
+        if(code === 'VK2'){
+            json = {
+                regStartDate: date,
+                regEndDate: date,
+                regNum: countDate,
+                regReason: reason,
+                code: code,
+                empCode: empInfo[0].empCode
+            }; 
+        }else{
+            json = {
+                regStartDate: startDate,
+                regEndDate: endDate,
+                regNum: countDate,
+                regReason: reason,
+                code: code,
+                empCode: empInfo[0].empCode
+            };  
+        }
 
         fetch(`/vacation/doUpdate/${id}`, {
             method: 'PUT',
@@ -293,7 +313,7 @@ const ApplyPage = () => {
                         resDaysNum: res.employee.vacation.resDaysNum,
                     },
                 ]);
-                console.log(res.employee.register);
+                // console.log(res.employee.register);
                 setEmpReg(res.employee.register);
             })
             .catch((error) => {
@@ -576,9 +596,9 @@ const ApplyPage = () => {
                             <Form.Group controlId="ControlInput1">
                                 <Form.Label>휴가 기간</Form.Label>
                                 <FormInput>
-                                    <FormButton>시작<DatePicker selected={startDate} onChange={(date) => setStartDate(date)} className="datepicker"/>
+                                    <FormButton>시작<DatePicker selected={startDate} onChange={(d) => setSDate(d)} className="datepicker"/>
                                     </FormButton>
-                                    <FormButton>종료<DatePicker selected={endDate} onChange={(date) => setEndDate(date)} className="datepicker"/>
+                                    <FormButton>종료<DatePicker selected={endDate} onChange={(d) => setEDate(d)} className="datepicker"/>
                                     </FormButton>
                                 </FormInput>
                             </Form.Group>

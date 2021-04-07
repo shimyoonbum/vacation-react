@@ -62,6 +62,7 @@ const ProfileButton = styled.div`
 
 const MainPage = () => {
     const [empInfo, setEmpInfo] = useState({});
+    const [auth, setAuth] = useState([]);
 
     const getUserInfo = () =>{
         var token = 'Bearer ' + window.sessionStorage.getItem('Authorization');
@@ -80,7 +81,8 @@ const MainPage = () => {
                 window.alert('서버 오류입니다. 관리자에게 문의 바랍니다.');
             }
         })
-        .then((res) => {    
+        .then((res) => {  
+            setAuth(res.authorities);
             setEmpInfo({
                 empName: res.employee.empName,
                 empCode: res.employee.empCode,
@@ -108,7 +110,7 @@ const MainPage = () => {
     return (
         <>
             <GlobalStyle />
-            <Header />
+            <Header auth={auth}/>
             <div className="container">
                 <h2>USERINFO</h2>
                 <hr />

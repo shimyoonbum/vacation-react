@@ -3,7 +3,7 @@ import { Nav, Navbar } from 'react-bootstrap';
 import imgfile from '../resources/img/metanet.png';
 import '../resources/css/Header.scss';
 
-function Header() {
+function Header(props) {
     const handleLogout = () => {
         window.alert('로그아웃 되었습니다.');
         window.sessionStorage.setItem('Authorization', '');
@@ -27,14 +27,18 @@ function Header() {
                     <img src={imgfile} alt="Metanet"></img>
                 </Navbar.Brand>
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
-                <Navbar.Collapse id="basic-navbar-nav">
+                <Navbar.Collapse id="basic-navbar-nav">                    
                     <Nav className="mr-auto">
-                        <Nav.Link href="/apply" className="link">
-                            휴가 등록
-                        </Nav.Link>
-                        <Nav.Link href="/manage" className="link">
-                            신청자 목록
-                        </Nav.Link>
+                    {
+                        props.auth.find(element => {
+                            console.log(element)
+                            if(element.authorityName === 'ROLE_ADMIN'){
+                                <Nav.Link href="/manage" className="link">
+                                    신청자 목록
+                                </Nav.Link>
+                            }                            
+                        })
+                    }  
                     </Nav>
                 </Navbar.Collapse>
                 <Navbar.Collapse className="justify-content-end">

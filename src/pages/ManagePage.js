@@ -134,24 +134,20 @@ const ManagePage = () => {
             body: JSON.stringify(apr)   
         })
         .then((res) => {
-            console.log(res);
             if (res.status === 200) {
                 return res.json();
             } else if(res.status === 400) {
                 alert('사용가능한 휴가 일수를 초과하였습니다.');
+                return res.json();
             } else {
                 alert('서버 오류입니다. 관리자에게 문의 바랍니다.');
             }
         })
         .then((res) => {
-            if(res !== undefined){
-                if(res.result > 0){
-                    alert('휴가 처리 하였습니다.');
-                    getManage();
-                }
-                else
-                    alert('휴가 처리에 실패하였습니다..');    
-            }            
+            if(res.result > 0){
+                alert('휴가 처리 하였습니다.');
+                getManage();
+            }  
             setId('');
             setReason('');            
         })
