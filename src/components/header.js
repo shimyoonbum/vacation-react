@@ -27,19 +27,23 @@ function Header(props) {
                     <img src={imgfile} alt="Metanet"></img>
                 </Navbar.Brand>
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
-                <Navbar.Collapse id="basic-navbar-nav">                    
+                <Navbar.Collapse id="basic-navbar-nav">
                     <Nav className="mr-auto">
                     {
-                        props.auth.find(element => {
-                            console.log(element)
-                            if(element.authorityName === 'ROLE_ADMIN'){
-                                <Nav.Link href="/manage" className="link">
-                                    신청자 목록
-                                </Nav.Link>
-                            }                            
-                        })
-                    }  
-                    </Nav>
+                        props.auth.find(p => p.authorityName === 'ROLE_USER')
+                        ?   <Nav.Link href="/apply" className="link">
+                                휴가 등록
+                            </Nav.Link>                            
+                        :   <></>
+                    }
+                    {
+                        props.auth.find(p => p.authorityName === 'ROLE_ADMIN')
+                        ?   <Nav.Link href="/manage" className="link">
+                                신청자 목록
+                            </Nav.Link>                                
+                        :   <></>
+                    }       
+                    </Nav>            
                 </Navbar.Collapse>
                 <Navbar.Collapse className="justify-content-end">
                     <Nav.Link href="/" className="link" onClick={handleLogout}>

@@ -42,6 +42,7 @@ const ApplyPage = () => {
     const [startDate, setStartDate] = useState(new Date());
     const [endDate, setEndDate] = useState(new Date());
     const [countDate, setCountDate] = useState(new Date());
+    const [auth, setAuth] = useState([]);
 
     // const [dialog, setDialog] = useState(false);
 
@@ -302,7 +303,7 @@ const ApplyPage = () => {
                             break;
                     }
                 }
-
+                setAuth(res.authorities);
                 setEmpInfo([
                     {
                         empCode: res.employee.empCode,
@@ -459,7 +460,7 @@ const ApplyPage = () => {
     return (
         <Container>
             <GlobalStyle />
-            <Header />
+            <Header auth={auth}/>
             <Block>
                 <h3>휴가 신청</h3>
                 <hr />

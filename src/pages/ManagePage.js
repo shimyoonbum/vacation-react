@@ -24,6 +24,7 @@ const Block = styled.div`
 const ManagePage = () => {
     const [teamInfo, setTeamInfo] = useState([]);
     const [vacation, setVacation] = useState([]);
+    const [auth, setAuth] = useState([]);
 
     const [dialog, setDialog] = useState(false);
     const [id, setId] = useState('');
@@ -50,7 +51,7 @@ const ManagePage = () => {
                 window.alert('서버 오류입니다. 관리자에게 문의 바랍니다.');
             }
         })
-        .then((res) => {
+        .then((res) => {            
             // let manage = res.filter(reg => reg.empCode !== 'E0011');
             let manage = res.slice(1, res.length);  //기존 배열 유지하고 첫번째요소만 삭제
             let list = [];
@@ -61,8 +62,9 @@ const ManagePage = () => {
                     delete data.register 
                     list = [...list, Object.assign(c, data)];
                 })                               
-            })            
+            })           
 
+            console.log(res);
             setVacation(list.filter(l => l.vsCode === 'VS1'));
             setTeamInfo(res);    
         })
@@ -164,7 +166,7 @@ const ManagePage = () => {
     return (
         <>
             <GlobalStyle />
-            <Header />
+            <Header auth={auth}/>
             <Block>
                 <h3>팀원(승인 요청자) 정보</h3>
                 <hr/>
