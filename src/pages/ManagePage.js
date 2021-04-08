@@ -53,7 +53,7 @@ const ManagePage = () => {
         })
         .then((res) => {            
             // let manage = res.filter(reg => reg.empCode !== 'E0011');
-            let manage = res.slice(1, res.length);  //기존 배열 유지하고 첫번째요소만 삭제
+            let manage = res.emp.slice(1, res.length);  //기존 배열 유지하고 첫번째요소만 삭제
             let list = [];
 
             manage.map(data => {
@@ -63,10 +63,9 @@ const ManagePage = () => {
                     list = [...list, Object.assign(c, data)];
                 })                               
             })           
-
-            console.log(res);
+            setAuth(res.authorities);
             setVacation(list.filter(l => l.vsCode === 'VS1'));
-            setTeamInfo(res);    
+            setTeamInfo(res.emp);    
         })
         .catch((error) => {
             console.error(error);
