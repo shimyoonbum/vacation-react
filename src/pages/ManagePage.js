@@ -109,7 +109,6 @@ const ManagePage = () => {
                 vsCode : 'VS2'
             }
         }
-        // console.log(apr);
 
         doUpdate(id, apr);
     }

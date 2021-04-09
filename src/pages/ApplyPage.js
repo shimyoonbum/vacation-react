@@ -5,7 +5,6 @@ import { createGlobalStyle } from 'styled-components';
 import { Table, Modal, Container, Form } from 'react-bootstrap';
 import DatePicker from 'react-datepicker';
 import Button from '../components/Button';
-import Dialog from '../components/Dialog';
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -43,29 +42,11 @@ const ApplyPage = () => {
     const [endDate, setEndDate] = useState(new Date());
     const [countDate, setCountDate] = useState(new Date());
     const [auth, setAuth] = useState([]);
-
-    // const [dialog, setDialog] = useState(false);
-
     const [empInfo, setEmpInfo] = useState([]);
     const [empReg, setEmpReg] = useState([]);
 
     // checked 된 것들
     const [checkItems, setCheckItems] = useState([]);
-
-    // Dialog 오픈
-    // const onDialog = () => {
-    //     setDialog(true);
-    // };
-
-    // Dialog 확인 클릭
-    // const onConfirm = () => {
-    //     setDialog(false);
-    // };
-
-    // Dialog 취소 클릭
-    // const onCancel = () => {
-    //     setDialog(false);
-    // };   
 
     //반차 날짜 설정
     const setHalfDate = (date) => {
@@ -303,6 +284,8 @@ const ApplyPage = () => {
                             break;
                     }
                 }
+                if(res.employee.empUpper === null)
+                    res.employee.empUpper = res.employee.empName
                 setAuth(res.authorities);
                 setEmpInfo([
                     {
@@ -314,7 +297,6 @@ const ApplyPage = () => {
                         resDaysNum: res.employee.vacation.resDaysNum,
                     },
                 ]);
-                // console.log(res.employee.register);
                 setEmpReg(res.employee.register);
             })
             .catch((error) => {
@@ -626,11 +608,6 @@ const ApplyPage = () => {
                     
                 </Modal.Footer>
             </Modal>
-
-            {/* <Dialog title="휴가 등록" confirmText="등록" cancelText="취소"
-            onConfirm={onConfirm} onCancel={onCancel} visible={dialog}>
-                휴가 등록 하시겠습니까?
-            </Dialog> */}
         </Container>
     );
 };

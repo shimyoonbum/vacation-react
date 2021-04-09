@@ -59,33 +59,38 @@ const SignPage = () => {
             password: password,
         };
 
-        fetch('/api/authenticate', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json; charset=utf-8',
-            },
-            body: JSON.stringify(param),
-        })
-            .then((res) => {
-                if (res.status === 200) {
-                    return res.json();
-                } else if (res.status === 401) {
-                    window.alert('아이디 혹은 비밀번호가 일치하지 않습니다.');
-                    onReset();
-                } else {
-                    window.alert('3자리 이상의 비밀번호를 입력해주세요.');
-                }
+        if(param.username === ''){
+            alert('계정을 입력해주세요.');
+        }else if(param.password === ''){
+            alert('비밀번호를 입력해주세요.');
+        }else{
+            fetch('/api/authenticate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json; charset=utf-8',
+                },
+                body: JSON.stringify(param),
             })
-            .then((res) => {
-                if (res != null) {
-                    window.sessionStorage.setItem('Authorization', res.token);
-
+            .then(res => res.json())
+            .then(res => {
+                if(res.statusCode === 200){
+                    window.alert('로그인 성공!');
+                    window.sessionStorage.setItem('Authorization', res.data);
                     document.location.href = '/main';
+                }else if(res.statusCode === 400){
+                    alert(res.data);
+                }else if(res.statusCode === 401){
+                    alert(res.data);
+                    onReset();
+                }else{
+                    alert('서버 에러입니다!');
                 }
+                
             })
             .catch((error) => {
                 console.error(error);
             });
+        }
     };
 
     return (
