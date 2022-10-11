@@ -75,7 +75,7 @@ const SignPage = () => {
             .then(res => {
                 if(res.statusCode === 200){
                     window.alert('로그인 성공!');
-                    window.sessionStorage.setItem('Authorization', res.data);
+                    window.sessionStorage.setItem('Authorization', res.data.token);
                     document.location.href = '/main';
                 }else if(res.statusCode === 400){
                     alert(res.data);
